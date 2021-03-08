@@ -42,6 +42,7 @@ namespace OWuffel.Util
             {
                 var Setting = new Settings();
                 Setting.guild_id = guild_id;
+                Setting.botPrefix = "+";
                 Setting.botDisabledCommands = "[{}]";
                 Setting.botActive = 1;
                 await _db.Settings.AddAsync(Setting);
@@ -55,7 +56,7 @@ namespace OWuffel.Util
             return null;
         }
 
-        public async Task SetSettingsValueAsync(ulong guild, string key, ulong value)
+        public async Task<IAsyncResult> SetSettingsValueAsync(ulong guild, string key, ulong value)
         {
             using (var context = new WuffelDBContext())
             {
@@ -69,6 +70,24 @@ namespace OWuffel.Util
                 await context.SaveChangesAsync();
 
                 await context.DisposeAsync();
+                return Task.CompletedTask;
+            }
+        }
+        public async Task<IAsyncResult> SetSettingsValueAsync(ulong guild, string key, string value)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                Settings = await context.Settings.SingleOrDefaultAsync(s => s.guild_id == guild);
+
+                if (Settings == null)
+                {
+                    Settings = await SetDefaultSettingsAsync(guild);
+                }
+                Settings.GetType().GetProperty(key).SetValue(Settings, value);
+                await context.SaveChangesAsync();
+
+                await context.DisposeAsync();
+                return Task.CompletedTask;
             }
         }
     }

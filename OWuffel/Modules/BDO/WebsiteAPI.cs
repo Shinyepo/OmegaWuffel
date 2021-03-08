@@ -161,7 +161,7 @@ namespace OWuffel.Modules.BDO
                         }
                         else
                         {
-                            countreal = ((count.Count() - 1) / 11) - 1;
+                            countreal = ((count.Count() - 12) - 1) / 12 + 1;
                         }
                         var Characters = new List<Characters>();
                         string[] splitchar = null;

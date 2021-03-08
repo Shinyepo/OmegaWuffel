@@ -54,15 +54,15 @@ namespace OWuffel.Services
             // get prefix from the configuration file
             char prefix = Char.Parse(Config.Prefix);
 
-            // determine if the message has a valid prefix, and adjust argPos based on prefix
+            // determine if the message has a valid prefix, and adjust argPos based on prefix            
             if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasCharPrefix(prefix, ref argPos)))
             {
                 return;
             }
 
 
+
             var context = new Cipska(_client, message, _services);
-            
             // execute command if one is found that matches
             await _commands.ExecuteAsync(context, argPos, _services);
         }
@@ -80,6 +80,7 @@ namespace OWuffel.Services
             // if a command isn't found, log that info to console and exit this method
             if (!command.IsSpecified)
             {
+                //command.Channel.SendMessageAsync($"{context.Message..Mention}, my prefix for this server is \"{context.Settings.botPrefix}\"");
                 Log.Error($"Command failed to execute for [{context.User.Username}] <-> [{result.ErrorReason}]!");
                 return;
             }

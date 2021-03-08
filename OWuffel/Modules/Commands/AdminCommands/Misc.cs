@@ -10,15 +10,64 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.Addons.Interactive;
+using System.Text.RegularExpressions;
+using OWuffel.Util;
 
 namespace OWuffel.Modules.Commands.AdminCommands
 {
     public class Misc : ModuleBase<Cipska>
     {
-        public InteractiveService inbase { get; set; }
-        public Misc(InteractiveService sv)
+        private InteractiveService inbase { get; set; }
+        private DatabaseUtilities _db { get; set; }
+
+        public Misc(InteractiveService sv, DatabaseUtilities db)
         {
             inbase = sv;
+            _db = db;
+        }
+
+        [Command("Prefix")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task ChangePrefix(string newprefix)
+        {
+            if (newprefix.Length > 3)
+            {
+                await ReplyAsync("New prefix cannot be longer than 3 characters.");
+                return;
+            }
+            var regex = new Regex("[0-9]");
+            var regexresult = regex.IsMatch(newprefix);
+            if (regexresult == true)
+            {
+                await ReplyAsync("Prefix cannot contain numbers");
+            }
+            var taskresult = await _db.SetSettingsValueAsync(Context.Guild.Id, "botPrefix", newprefix);
+            if (taskresult.IsCompleted)
+            {
+                var em = new EmbedBuilder()
+                   .WithAuthor(Context.Client.CurrentUser)
+                   .WithColor(Color.Green)
+                   .WithTitle("Prefix change.")
+                   .WithDescription($"Prefix change completed successfully. New prefix for this server is: \"{newprefix}\"")
+                   .WithCurrentTimestamp();
+
+                await ReplyAsync(embed: em.Build());
+                return;
+            } else
+            {
+                var em = new EmbedBuilder()
+                   .WithAuthor(Context.Client.CurrentUser)
+                   .WithColor(Color.Red)
+                   .WithTitle("Prefix change.")
+                   .WithDescription($"Something went wrong! Prefix was not changed.")
+                   .WithCurrentTimestamp();
+
+                await ReplyAsync(embed: em.Build());
+                return;
+            }
+            
+
+
         }
 
         [Command("profile")]
