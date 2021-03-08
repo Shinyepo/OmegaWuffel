@@ -471,7 +471,7 @@ namespace OWuffel.Modules.BDO
                             descrip = $"This player is a member of [{guildname}]({guildlink + $"&region={reg}"}) guild.";
                         }
                         else
-                        {
+                        {//hello team
                             descrip = "This player's guild is private.";
                         }
                         for (int i = 0; i < countreal; i++)
