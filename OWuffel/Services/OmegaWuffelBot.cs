@@ -190,6 +190,7 @@ namespace OWuffel.Services
                 .AddSingleton<MessageEvents>()
                 .AddSingleton<GuildEvents>()
                 .AddSingleton<UserEvents>()
+                .AddSingleton<ReactionEvents>()
                 .AddSingleton<DatabaseUtilities>()
                 .AddSingleton<VoiceChannelEvents>()
                 .AddSingleton(new InteractivityService(Client, TimeSpan.FromMinutes(3)))

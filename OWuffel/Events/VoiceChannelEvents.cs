@@ -31,13 +31,31 @@ namespace OWuffel.Events
                 {
                     if (!(user is IGuildUser usr) || usr.IsBot)
                         return;
-                    
+
                     var beforeVch = previousstate.VoiceChannel;
                     var afterVch = newstate.VoiceChannel;
 
-                    
+
                     var Settings = await _db.GetGuildSettingsAsync(usr.Guild.Id);
                     if (Settings == null || Settings.logVoiceStateUpdated == 0) return;
+                    if (Settings.logIgnoreVoiceStateUpdated != null)
+                    {
+                        if (previousstate.VoiceChannel != null)
+                        {
+                            if (Settings.logIgnoreVoiceStateUpdated.Contains(beforeVch.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(user.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(afterVch.Id.ToString()))
+                            {
+                                return;
+                            }
+                        }
+                        else
+                        {
+
+                            if (Settings.logIgnoreVoiceStateUpdated.Contains(afterVch.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(user.Id.ToString()))
+                            {
+                                return;
+                            }
+                        }
+                    }
                     ITextChannel logChannel;
                     var member = user as SocketGuildUser;
                     var guild = member.Guild;

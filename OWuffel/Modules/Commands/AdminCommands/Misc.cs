@@ -48,12 +48,13 @@ namespace OWuffel.Modules.Commands.AdminCommands
                    .WithAuthor(Context.Client.CurrentUser)
                    .WithColor(Color.Green)
                    .WithTitle("Prefix change.")
-                   .WithDescription($"Prefix change completed successfully. New prefix for this server is: \"{newprefix}\"")
+                   .WithDescription($"Prefix change completed successfully. New prefix for this server is: \"**{newprefix}**\"")
                    .WithCurrentTimestamp();
 
                 await ReplyAsync(embed: em.Build());
                 return;
-            } else
+            }
+            else
             {
                 var em = new EmbedBuilder()
                    .WithAuthor(Context.Client.CurrentUser)
@@ -65,7 +66,7 @@ namespace OWuffel.Modules.Commands.AdminCommands
                 await ReplyAsync(embed: em.Build());
                 return;
             }
-            
+
 
 
         }
@@ -103,7 +104,7 @@ namespace OWuffel.Modules.Commands.AdminCommands
                     string roles = "";
                     foreach (var item in user.Roles)
                     {
-                        if (!item.IsEveryone) roles += item.Name + "\n";
+                        if (!item.IsEveryone) roles += item.Mention + "\n";
                     }
                     em.AddField("Roles: ", roles, false);
                 }
@@ -183,51 +184,54 @@ namespace OWuffel.Modules.Commands.AdminCommands
                 await ReplyAsync("Provided number is not valid. Amount of messages to delete must be between 1 and 100.");
                 return;
             }
-            //download 100 messages, loop through them to compare user to author, if matched -> append to Messages. repeat step 2 -> 3 untill number > converted
+            IEnumerable<IMessage> Messages = Enumerable.Empty<IMessage>();
+
+            Messages = await Context.Channel.GetMessagesAsync(converted + 1).FlattenAsync();
+            await ((ITextChannel)Context.Channel).DeleteMessagesAsync(Messages);
+            IUserMessage m = await ReplyAsync($"I have deleted {converted} messages.");
+            await Task.Delay(3000);
+            await m.DeleteAsync();
+
+
+        }
+        [Command("purge", RunMode = RunMode.Async)]
+        [Alias("prune")]
+        [RequireUserPermission(GuildPermission.ManageMessages)]
+        [RequireBotPermission(GuildPermission.ManageMessages)]
+        public async Task PruneUser(SocketGuildUser user, string amount)
+        {
+            var converted = Convert.ToInt16(amount);
+
+            if (converted < 1 && converted > 100)
+            {
+                await ReplyAsync("Provided number is not valid. Amount of messages to delete must be between 1 and 100.");
+                return;
+            }
             IEnumerable<IMessage> Messages = Enumerable.Empty<IMessage>();
             List<IMessage> list = new List<IMessage>();
-            if (user != null)
+            var a = await Context.Channel.GetMessagesAsync(100).FlattenAsync();
+            var b = 0;
+            while (b <= converted+1)
             {
-                var a = await Context.Channel.GetMessagesAsync(100).FlattenAsync();
-                var b = 0;
-
-                while (b <= converted)
+                var last = a.Last();
+                foreach (var item in a)
                 {
-                    var last = a.Last();
-                    Console.WriteLine("before for");
-                    foreach (var item in a)
+                    if (b >= converted+1) break;
+                    if (item.Author == user)
                     {
-                        if (b >= converted) break;
-                        if (item.Author == user)
-                        {
-                            list.Add(item);
-                            Console.WriteLine(item.Id);
-                            Console.WriteLine(b);
-                            b++;
-                        }
+                        list.Add(item);
+                        b++;
                     }
-                    Console.WriteLine("fater for");
-                    if (b >= converted) break;
-                    a = await Context.Channel.GetMessagesAsync(last, Direction.Before, 100).FlattenAsync();
                 }
-                Messages = list;
-                await ((ITextChannel)Context.Channel).DeleteMessagesAsync(Messages);
-                var name = user.Nickname == null ? user.Username : user.Nickname;
-                IUserMessage m = await ReplyAsync($"I have deleted {converted} {name}'s messages.");
-                await Task.Delay(3000);
-                await m.DeleteAsync();
-
+                if (b >= converted+1) break;
+                a = await Context.Channel.GetMessagesAsync(last, Direction.Before, 100).FlattenAsync();
             }
-            else
-            {
-                Messages = await Context.Channel.GetMessagesAsync(converted + 1).FlattenAsync();
-                await ((ITextChannel)Context.Channel).DeleteMessagesAsync(Messages);
-                IUserMessage m = await ReplyAsync($"I have deleted {converted} messages.");
-                await Task.Delay(3000);
-                await m.DeleteAsync();
-            }
-
-
+            Messages = list;
+            await ((ITextChannel)Context.Channel).DeleteMessagesAsync(Messages);
+            var name = user.Nickname == null ? user.Username : user.Nickname;
+            IUserMessage m = await ReplyAsync($"I have deleted {converted} {name}'s messages.");
+            await Task.Delay(3000);
+            await m.DeleteAsync();
         }
     }
 }

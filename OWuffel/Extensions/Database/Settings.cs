@@ -6,9 +6,10 @@ namespace OWuffel.Extensions.Database
     {
         
         [Key]
-        public int id { get; set; }        
+        public int id { get; set; }
 
         public ulong guild_id { get; set; }
+
         public int botActive { get; set; }
         public string botPrefix { get; set; }
         public ulong botModRole { get; set; }
@@ -26,6 +27,7 @@ namespace OWuffel.Extensions.Database
 
         //UserVoiceStateUpdated
         public ulong logVoiceStateUpdated { get; set; }
+        public string logIgnoreVoiceStateUpdated { get; set; }
 
         //UserEvents
         public ulong logUserJoined { get; set; }
@@ -40,6 +42,8 @@ namespace OWuffel.Extensions.Database
         //MessageEvents
         public ulong logMessageDeleted { get; set; }
         public ulong logMessageUpdated { get; set; }
+        public string logIgnoreMessageUpdated { get; set; }
+        public string logIgnoreMessageDeleted { get; set; }
 
         //GuildEvents
         public ulong logEmoteCreated { get; set; }
@@ -51,7 +55,9 @@ namespace OWuffel.Extensions.Database
         public ulong logGuildUpdated { get; set; }
 
 
-
+        //Suggestionconfig
+        public ulong suggestionChannel { get; set; }
+        public ulong suggestionLogChannel { get; set; }
 
 
         public ulong reactServerChannel { get; set; }

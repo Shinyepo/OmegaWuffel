@@ -31,6 +31,13 @@ namespace OWuffel.events
             var guild = GetThings.getGuildFromChannel(channel);
             var Settings = await _db.GetGuildSettingsAsync(guild.Id);
             if (Settings.logMessageUpdated == 0) return;
+            if (Settings.logIgnoreMessageUpdated != null)
+            {
+                if (Settings.logIgnoreMessageUpdated.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageUpdated.Contains(after.Author.Id.ToString()))
+                {
+                    return;
+                }
+            }
 
             string beforereply;
             if (message.Content == after.Content) beforereply = "A message was edited but i could not get its content before change.";
@@ -40,7 +47,7 @@ namespace OWuffel.events
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithAuthor(message.Author)
-                .WithDescription($"[Message update](https://discordapp.com/channels/{ guild.Id }/{ channel.Id }/{ message.Id })\n**Message edited by { message.Author } in <#{ channel.Id }>.**")
+                .WithDescription($"[Edited message](https://discordapp.com/channels/{ guild.Id }/{ channel.Id }/{ message.Id })\n**Message edited by { message.Author } in <#{ channel.Id }>.**")
                 .WithColor(Color.Blue)
                 .AddField("Before:", beforereply)
                 .AddField("After:", after)
@@ -61,7 +68,13 @@ namespace OWuffel.events
             var guild = GetThings.getGuildFromChannel(channel);
             var Settings = await _db.GetGuildSettingsAsync(guild.Id);
             if (Settings.logMessageDeleted == 0) return;
-
+            if (Settings.logIgnoreMessageDeleted != null)
+            {
+                if (Settings.logIgnoreMessageDeleted.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageDeleted.Contains(message.Author.Id.ToString()))
+                {
+                    return;
+                }
+            }
             string content;
             if (message.Content == null) content = "A message was deleted but i could not get its content.";
             else content = message.Content;
@@ -70,7 +83,7 @@ namespace OWuffel.events
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.WithAuthor(message.Author)
-                .WithDescription($"[Message deleted](https://discordapp.com/channels/{ guild.Id }/{ channel.Id })\n**Message deleted by { message.Author } in <#{ channel.Id }>.**")
+                .WithDescription($"**Message deleted in <#{ channel.Id }>.**")
                 .WithColor(Color.Red)
                 .AddField("Content:", content)
                 .WithFooter($"• { guild.Name }")

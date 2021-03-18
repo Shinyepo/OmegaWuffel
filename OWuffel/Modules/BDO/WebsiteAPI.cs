@@ -64,6 +64,7 @@ namespace OWuffel.Modules.BDO
             ClassIcon.Add("Guardian", "https://cdn.discordapp.com/attachments/750774776188108941/817483620604182646/7dR36tD.png");
             ClassIcon.Add("Hashashin", "https://cdn.discordapp.com/attachments/750774776188108941/817483667378274344/AYDj4Bx.png");
             ClassIcon.Add("Nova", "https://cdn.discordapp.com/attachments/750774776188108941/817483714094170172/GZUjWIP.png");
+            ClassIcon.Add("Sage", "https://cdn.discordapp.com/attachments/812328100988977166/822220102493274162/sage.png");
         }
 
         [Command("familyname", RunMode = RunMode.Async)]
@@ -214,7 +215,6 @@ namespace OWuffel.Modules.BDO
 
 
                         }
-                        Console.WriteLine(Characters.Count);
                         var pages = new PageBuilder[countreal];
                         var descrip = "";
                         if (guildname != "Private" && guildlink != "javascript:void(0)")

@@ -222,6 +222,7 @@ namespace OWuffel.Services
                );
         }
 
+
         public static void Fatal(
            string message,
            [CallerMemberName] string memberName = "",

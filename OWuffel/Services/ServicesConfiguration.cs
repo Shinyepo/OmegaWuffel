@@ -25,6 +25,7 @@ namespace OWuffel.Services
         private readonly GuildEvents _guildevents;
         private readonly VoiceChannelEvents _voiceevents;
         private readonly UserEvents _userevents;
+        private readonly ReactionEvents _reactionevets;
 
         public ServicesConfiguration(IServiceProvider services)
         {
@@ -37,6 +38,7 @@ namespace OWuffel.Services
             _guildevents = services.GetService<GuildEvents>();
             _voiceevents = services.GetService<VoiceChannelEvents>();
             _userevents = services.GetService<UserEvents>();
+            _reactionevets = services.GetService<ReactionEvents>();
             _services = services;
             _instanceOfLavaNode.OnTrackEnded += OnTrackEnded;
 
@@ -89,6 +91,9 @@ namespace OWuffel.Services
             _discord.UserBanned += _userevents.UserBanned;
             _discord.UserUpdated += _userevents.UserUpdated;
             _discord.GuildMemberUpdated += _userevents.GuildMemberUpdated;
+            _discord.ReactionAdded += _reactionevets.ReactionAdded;
+            _discord.ReactionRemoved += _reactionevets.ReactionRemoved;
+            _discord.ReactionsCleared += _reactionevets.ReactionCleared;
 
             if (!_instanceOfLavaNode.IsConnected)
             {

@@ -66,6 +66,15 @@ namespace OWuffel.Migrations
                     b.Property<ulong>("logGuildUpdated")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("logIgnoreMessageDeleted")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("logIgnoreMessageUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("logIgnoreVoiceStateUpdated")
+                        .HasColumnType("TEXT");
+
                     b.Property<ulong>("logMessageDeleted")
                         .HasColumnType("INTEGER");
 
@@ -108,6 +117,12 @@ namespace OWuffel.Migrations
                     b.Property<ulong>("reactServerParent")
                         .HasColumnType("INTEGER");
 
+                    b.Property<ulong>("suggestionChannel")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("suggestionLogChannel")
+                        .HasColumnType("INTEGER");
+
                     b.Property<ulong>("welcomeChannel")
                         .HasColumnType("INTEGER");
 
@@ -116,7 +131,60 @@ namespace OWuffel.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("guild_id")
+                        .IsUnique();
+
                     b.ToTable("Settings");
+                });
+
+            modelBuilder.Entity("OWuffel.Extensions.Database.Suggestions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Author")
+                        .HasColumnType("TEXT");
+
+                    b.Property<ulong>("AuthorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("ChannelId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("MessageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Moderator")
+                        .HasColumnType("TEXT");
+
+                    b.Property<ulong>("ModeratorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VoteDislike")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("VoteLike")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suggestions");
                 });
 #pragma warning restore 612, 618
         }

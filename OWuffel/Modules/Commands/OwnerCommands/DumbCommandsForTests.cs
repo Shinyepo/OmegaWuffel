@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Newtonsoft.Json.Linq;
 using OWuffel.Models;
 using OWuffel.Services;
@@ -40,6 +41,14 @@ namespace OWuffel.Modules.Commands.OwnerCommands
         public async Task guildicon()
         {
             await ReplyAsync(Context.Guild.IconUrl);
+        }
+        [Command("dupa")]
+        public async Task dupa()
+        {
+            string s = "sds";
+            var a = Convert.ToInt32(s);
+            var b = Context.User.PublicFlags.Value;
+            await ReplyAsync(b.ToString().Replace("d", ""));
         }
     }
 }
