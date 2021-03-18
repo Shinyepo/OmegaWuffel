@@ -61,7 +61,12 @@ namespace OWuffel.Services
             var guildchannel = message.Channel as SocketGuildChannel;
             var settings = await _db.GetGuildSettingsAsync(guildchannel.Guild.Id);
             Prefix = settings.botPrefix;
-            if (Prefix == null) return;
+            if (Prefix == null)
+            {
+                await _db.SetSettingsValueAsync(guildchannel.Guild.Id, "botPrefix", "+");
+                settings = await _db.GetGuildSettingsAsync(guildchannel.Guild.Id);
+                Prefix = settings.botPrefix;
+            }
             if (message.Content.Contains(_client.CurrentUser.Id.ToString()))
             {
                 var cut = message.Content.Replace("<@!" + _client.CurrentUser.Id + ">", "").Trim();
