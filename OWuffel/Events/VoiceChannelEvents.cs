@@ -40,17 +40,17 @@ namespace OWuffel.Events
                     if (Settings == null || Settings.logVoiceStateUpdated == 0) return;
                     if (Settings.logIgnoreVoiceStateUpdated != null)
                     {
-                        if (previousstate.VoiceChannel != null)
+                        if (beforeVch == null)
                         {
-                            if (Settings.logIgnoreVoiceStateUpdated.Contains(beforeVch.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(user.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(afterVch.Id.ToString()))
+                            if (Settings.logIgnoreVoiceStateUpdated.Contains(user.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(afterVch.Id.ToString()))
                             {
                                 return;
                             }
                         }
-                        else
+                        else if (afterVch == null)
                         {
 
-                            if (Settings.logIgnoreVoiceStateUpdated.Contains(afterVch.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(user.Id.ToString()))
+                            if (Settings.logIgnoreVoiceStateUpdated.Contains(beforeVch.Id.ToString()) || Settings.logIgnoreVoiceStateUpdated.Contains(user.Id.ToString()))
                             {
                                 return;
                             }

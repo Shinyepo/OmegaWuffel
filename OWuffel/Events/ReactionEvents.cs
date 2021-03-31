@@ -5,6 +5,7 @@ using OWuffel.Services;
 using OWuffel.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace OWuffel.Events
 
         private async Task VoteMainTaskAsync(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel channel, SocketReaction reaction, Suggestions suggestion, string type)
         {
+            var sw = Stopwatch.StartNew();
+            Console.WriteLine("maintask start");
             var message = await msg.DownloadAsync();
 
             var votelike = new Emoji("👍");
@@ -29,10 +32,6 @@ namespace OWuffel.Events
             {
                 var likera = message.Reactions.SingleOrDefault(e => e.Key.Name == votelike.Name).Value.ReactionCount;
                 var amount = 0;
-                //if (likera < 2 && type == "added")
-                //{
-                //    await message.AddReactionAsync(votelike);
-                //}
                 amount = (likera - 1) - suggestion.VoteLike;
                 await VoteChangeAsync(msg, suggestion, amount, "like");
 
@@ -41,18 +40,18 @@ namespace OWuffel.Events
             {
                 var dislikera = message.Reactions.SingleOrDefault(e => e.Key.Name == votedislike.Name).Value.ReactionCount;
                 var amount = 0;
-                //if (dislikera < 2 && type == "added")
-                //{
-                //    await message.AddReactionAsync(votelike);
-                //}
                 amount = (dislikera - 1) - suggestion.VoteDislike;
                 await VoteChangeAsync(msg, suggestion, amount, "dislike");
             }
+            sw.Stop();
+            Log.Info($"maintask finished in {sw.Elapsed.TotalSeconds:F2}s");
             return;
         }
 
         private async Task VoteChangeAsync(Cacheable<IUserMessage, ulong> msg, Suggestions suggestion, int amount, string action)
         {
+            var sw = Stopwatch.StartNew();
+            Console.WriteLine("votechange start");
             var votelike = new Emoji("👍");
             var votedislike = new Emoji("👎");
 
@@ -62,6 +61,8 @@ namespace OWuffel.Events
             var embed = message.Embeds.First().ToEmbedBuilder();
             embed.Fields.First().Value = "👍 " + sug.VoteLike + "\n\n👎 " + sug.VoteDislike;
             await message.ModifyAsync(m => m.Embed = embed.Build());
+            sw.Stop();
+            Log.Info($"votechange finished in {sw.Elapsed.TotalSeconds:F2}s ");
         }
 
         public Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel channel, SocketReaction reaction)
@@ -70,12 +71,23 @@ namespace OWuffel.Events
             {
                 try
                 {
+
+                    var sw = Stopwatch.StartNew();
+                    Console.WriteLine(sw + " start reactionadded");
                     var message = await msg.DownloadAsync();
                     var chnl = channel as SocketGuildChannel;
                     var suggestion = await _db.LoopSuggestions(chnl.Guild.Id, msg.Id);
                     if (suggestion != null)
                     {
-                        await VoteMainTaskAsync(msg, channel, reaction, suggestion, "added");
+                        if (suggestion.Status == 1)
+                        {
+                            await VoteMainTaskAsync(msg, channel, reaction, suggestion, "added");
+                            sw.Stop();
+                            Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s passed");
+                            return;
+                        }
+                        sw.Stop();
+                        Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s not 1");
                         return;
                     }
                 }

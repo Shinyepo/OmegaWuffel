@@ -4,6 +4,7 @@ using OWuffel.Extensions.Database;
 using OWuffel.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace OWuffel.Util
                 using (var context = new WuffelDBContext())
                 {
                     Settings = await context.Settings.SingleOrDefaultAsync(s => s.guild_id == guild_id);
-                    Log.Info(context.ContextId.ToString());
+                    Log.Info(guild_id+" "+context.ContextId.ToString());
 
                     if (Settings == null)
                     {
@@ -217,9 +218,12 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
+                var sw = Stopwatch.StartNew();
+                Console.WriteLine(sw + "loop start");
                 Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.GuildId == guild && s.MessageId == messageid && s.Status == 1);
-                if (Suggestions == null) return new Suggestions();
                 await context.DisposeAsync();
+                sw.Stop();
+                Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s passed loop");
                 return Suggestions;
             }
         }

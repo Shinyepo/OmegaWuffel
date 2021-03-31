@@ -82,7 +82,7 @@ namespace OWuffel.Services
             {
                 return;
             }
-            var context = new Cipska(_client, message, _services);
+            var context = new Cipska(_client, message, settings);
             // execute command if one is found that matches
             await _commands.ExecuteAsync(context, argPos, _services);
         }
@@ -138,15 +138,11 @@ namespace OWuffel.Services
     public class Cipska : SocketCommandContext
     {
         public Settings Settings { get; }
-        private readonly DatabaseUtilities _db;
 
         public Cipska(DiscordSocketClient client, SocketUserMessage ms) : base(client, ms) { }
-        public Cipska(DiscordSocketClient client, SocketUserMessage ms, IServiceProvider services) : base(client, ms)
+        public Cipska(DiscordSocketClient client, SocketUserMessage ms, Settings settings) : base(client, ms)
         {
-            _db = services.GetRequiredService<DatabaseUtilities>();
-            var chnl = ms.Channel as SocketGuildChannel;
-            var Guild = chnl.Guild.Id;
-            Settings = _db.GetGuildSettingsAsync(Guild).GetAwaiter().GetResult();
+            Settings = settings;
         }
     }
 }
