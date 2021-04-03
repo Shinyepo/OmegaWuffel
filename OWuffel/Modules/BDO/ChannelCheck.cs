@@ -73,7 +73,7 @@ namespace OWuffel.Modules.BDO
         }
         [Command("channel")]
         [Alias("chck", "check")]
-        public async Task ChannelCheckAsync(int id, string channel, [Optional]string status)
+        public async Task ChannelCheckAsync(int id, string channel, [Remainder]string status)
         {
             await Context.Message.DeleteAsync();
             var channelcheck = await _db.GetChannelCheckAsync(id);
