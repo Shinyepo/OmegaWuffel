@@ -146,7 +146,7 @@ namespace OWuffel.Modules.BDO
             }
             else
             {
-                await ReplyAsync("jestes glupi cwel, nie ma takiego kanalu.");
+                await ReplyAsync("jestes glupi, nie ma takiego kanalu.");
             }
 
             var balenosfield = "```\n--------------\n";
