@@ -116,16 +116,16 @@ namespace OWuffel.Services
             // failure scenario, let's let the user know
             try
             {
-                if (command.Value.Name == "channel")
-                {
-                    var embed = new EmbedBuilder()
-                        .WithCurrentTimestamp()
-                        .WithColor(Color.Green)
-                        .WithTitle("Instrukcja obsługi Channel Check'a")
-                        .WithDescription($"**+check [id embedu] [kanal] [status]** - Służy do wypełnienia dużego embeda z komendy **+find nick** w celu znalezienia frajera z wojny.\n\n**id embedu** - To ta cyferka w stópce dużego embeda który sie pojawia po wywołaniu komendy \"**find**\"\n\n**kanal** - Przyjmuje krótkie wersje nazw kanałow(1 literowa, 3 literowa i pełna nazwa + cyferka z numerem kanału) np. ser3, c4, cal6 itd.\n\n**status** - Cokolwiek wpiszesz wyświetli sie w górnym embedzie, żeby oznaczyć znalezienie kogoś wpisz \"**bingo**\", \"**znaleziony**\" lub \"**tak**\". Po znalezieniu nie mozna korzystac juz z tego samego embeda. ");
-                    await context.Channel.SendMessageAsync(embed: embed.Build());
-                    return;
-                }
+                //if (command.Value.Name == "channel")
+                //{
+                //    var embed = new EmbedBuilder()
+                //        .WithCurrentTimestamp()
+                //        .WithColor(Color.Green)
+                //        .WithTitle("Instrukcja obsługi Channel Check'a")
+                //        .WithDescription($"**+check [id embedu] [kanal] [status]** - Służy do wypełnienia dużego embeda z komendy **+find nick** w celu znalezienia frajera z wojny.\n\n**id embedu** - To ta cyferka w stópce dużego embeda który sie pojawia po wywołaniu komendy \"**find**\"\n\n**kanal** - Przyjmuje krótkie wersje nazw kanałow(1 literowa, 3 literowa i pełna nazwa + cyferka z numerem kanału) np. ser3, c4, cal6 itd.\n\n**status** - Cokolwiek wpiszesz wyświetli sie w górnym embedzie, żeby oznaczyć znalezienie kogoś wpisz \"**bingo**\", \"**znaleziony**\" lub \"**tak**\". Po znalezieniu nie mozna korzystac juz z tego samego embeda. ");
+                //    await context.Channel.SendMessageAsync(embed: embed.Build());
+                //    return;
+                //}
                 var guild = await context.Client.GetGuildAsync(GuildId);
                 var chnl = await guild.GetChannelAsync(ChannelId) as ITextChannel;
                 var em = new EmbedBuilder()

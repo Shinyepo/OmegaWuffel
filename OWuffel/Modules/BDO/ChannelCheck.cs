@@ -83,7 +83,7 @@ namespace OWuffel.Modules.BDO
                 return;
             }
             var balenosalias = new List<string> { "b", "bal", "balenos" };
-            var calpheonalias = new List<string> { "c", "cal", "calpheon", "kapelon", "ciapelon" };
+            var calpheonalias = new List<string> { "c", "cal", "calpheon", "kapelon", "ciapelon", "calph" };
             var mediahalias = new List<string> { "m", "med", "mediah", "medijah" };
             var serendiaalias = new List<string> { "s", "ser", "serendia", "serenada", "serendija" };
             var valenciaalias = new List<string> { "val", "valencia", "pustynia", "desert" };
