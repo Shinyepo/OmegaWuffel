@@ -46,20 +46,23 @@ namespace OWuffel.Modules.BDO
             var insChannelCheck = await _db.CreateChannelCheckAsync(channelcheck);
 
             var channels = "```\n--------------\n1:\n2:\n3:\n4:\n5:\n6:```";
+            var elviachannels4 = "```\n--------------\n1:\n2:\n3*:\n4*:\n5*:\n6*:```";
+            var elviachannels3 = "```\n--------------\n1:\n2:\n3:\n4*:\n5*:\n6*:```";
             var smallchannels = "```\n--------------\n1:\n2:\n3:\n4:```";
             var em = new EmbedBuilder()
                 .WithAuthor(Context.User)
                 .WithColor(Color.Blue)
                 .WithDescription($"Poszukiwania frajera o nicku: **{nick}**.")
                 .AddField("Balenos", channels, true)
-                .AddField("Calpheon", channels, true)
-                .AddField("Mediah", channels, true)
-                .AddField("Serendia", channels, true)
-                .AddField("Valencia", channels, true)
+                .AddField("Calpheon", elviachannels4, true)
+                .AddField("Mediah", elviachannels4, true)
+                .AddField("Serendia", elviachannels4, true)
+                .AddField("Valencia", elviachannels3, true)
                 .AddField("Velia", channels, true)
                 .AddField("Grana", smallchannels, true)
-                .AddField("Arsha", "```\n--------------\n1:```", true)
+                .AddField("Arsha", "```\n--------------\n1*:```", true)
                 .AddField("Znaleziony?", "**NIE**", true)
+                .AddField("Legenda:", "* - oznaczenie serwera typu Elvia", false)
                 .WithFooter($"Id embeda: {insChannelCheck.Id}")
                 .WithCurrentTimestamp();
 
@@ -159,6 +162,12 @@ namespace OWuffel.Modules.BDO
             i = 1;
             foreach (var item in model.calpheon)
             {
+                if (i > 2)
+                {
+                    calpheonfield += i + "*: " + item.Value + "\n";
+                    i++;
+                    continue;
+                }
                 calpheonfield += i + ": " + item.Value + "\n";
                 i++;
             }
@@ -168,6 +177,12 @@ namespace OWuffel.Modules.BDO
             i = 1;
             foreach (var item in model.mediah)
             {
+                if (i > 2)
+                {
+                    mediahfield += i + "*: " + item.Value + "\n";
+                    i++;
+                    continue;
+                }
                 mediahfield += i + ": " + item.Value + "\n";
                 i++;
             }
@@ -177,6 +192,12 @@ namespace OWuffel.Modules.BDO
             i = 1;
             foreach (var item in model.serendia)
             {
+                if (i > 2)
+                {
+                    serendiafield += i + "*: " + item.Value + "\n";
+                    i++;
+                    continue;
+                }
                 serendiafield += i + ": " + item.Value + "\n";
                 i++;
             }
@@ -186,6 +207,12 @@ namespace OWuffel.Modules.BDO
             i = 1;
             foreach (var item in model.valencia)
             {
+                if (i > 3)
+                {
+                    valenciafield += i + "*: " + item.Value + "\n";
+                    i++;
+                    continue;
+                }
                 valenciafield += i + ": " + item.Value + "\n";
                 i++;
             }
@@ -213,7 +240,7 @@ namespace OWuffel.Modules.BDO
             i = 1;
             foreach (var item in model.arsha)
             {
-                arshafield += i + ": " + item.Value + "\n";
+                arshafield += i + "*: " + item.Value + "\n";
                 i++;
             }
             arshafield += "```";
@@ -226,6 +253,7 @@ namespace OWuffel.Modules.BDO
             em.AddField("Velia", veliafield, true);
             em.AddField("Grana", granafield, true);
             em.AddField("Arsha", arshafield, true);
+            
             if (status.ToLower() == "bingo" || status.ToLower() == "tak" || status.ToLower() == "znaleziony")
             {
                 em.AddField("Znaleziony?", "Znaleziony na **"+channel+"**", true);
@@ -234,7 +262,7 @@ namespace OWuffel.Modules.BDO
             {
                 em.AddField("Znaleziony?", "**NIE**", true);
             }
-
+            em.AddField("Legenda:", "* - oznaczenie serwera typu Elvia", false);
             await msg.ModifyAsync(m => m.Embed = em.Build());
             channelcheck.Channels = JsonConvert.SerializeObject(model);
             await _db.UpdateCheckChannelsAsync(channelcheck);
