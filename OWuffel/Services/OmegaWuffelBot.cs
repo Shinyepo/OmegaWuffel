@@ -193,7 +193,7 @@ namespace OWuffel.Services
                 .AddSingleton<ReactionEvents>()
                 .AddSingleton<DatabaseUtilities>()
                 .AddSingleton<VoiceChannelEvents>()
-                .AddSingleton(new InteractivityService(Client, TimeSpan.FromMinutes(3)))
+                .AddSingleton(new InteractivityService(Client, TimeSpan.FromMinutes(5)))
                 .AddSingleton<InteractiveService>();
 
 

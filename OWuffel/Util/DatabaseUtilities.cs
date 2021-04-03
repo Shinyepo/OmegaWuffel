@@ -47,6 +47,11 @@ namespace OWuffel.Util
             
         }
 
+        internal Task CreateChannelCheck(ChannelCheckModel channelcheck)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Settings> SetDefaultSettingsAsync(ulong guild_id)
         {
             try
@@ -227,5 +232,59 @@ namespace OWuffel.Util
                 return Suggestions;
             }
         }
+
+
+
+        //-----------------------CHANNEL CHECKS BDO ---------------------------//
+        public async Task<ChannelCheckModel> CreateChannelCheckAsync(ChannelCheckModel channelcheck)
+        {
+            using (var context = new WuffelDBContext())
+            {                
+                await _db.ChannelChecks.AddAsync(channelcheck);
+                await _db.SaveChangesAsync();
+                await context.DisposeAsync();
+                return channelcheck;
+            }
+        }
+
+        public async Task<ChannelCheckModel> ChannelCheckUpdateMessageIdAsync(ChannelCheckModel channelcheck)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var ChannelCheck = await _db.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
+                ChannelCheck.MessageId = channelcheck.MessageId;
+                await _db.SaveChangesAsync();
+                await context.DisposeAsync();
+                return ChannelCheck;
+            }
+        }
+
+        public async Task<ChannelCheckModel> GetChannelCheckAsync(int id)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var ChannelCheck = await _db.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == id && ch.Status == 1);
+                await context.DisposeAsync();
+                return ChannelCheck;
+            }
+        }
+        public async Task<ChannelCheckModel> UpdateCheckChannelsAsync(ChannelCheckModel channelcheck)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var ChannelCheck = await _db.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
+                if (ChannelCheck == null) return ChannelCheck;
+                ChannelCheck.Channels = channelcheck.Channels;
+                ChannelCheck.Status = channelcheck.Status;
+                await _db.SaveChangesAsync();
+                await context.DisposeAsync();
+                return ChannelCheck;
+            }
+        }
+
+
+        //-----------------------CHANNEL CHECKS BDO ---------------------------//
+
+
     }
 }

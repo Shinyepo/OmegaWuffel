@@ -35,6 +35,7 @@ namespace OWuffel.Modules.Commands.OwnerCommands
         public async Task kill(int processID)
         {
             Process.GetProcessById(processID).Kill();
+            await ReplyAsync("Zajebałem shard #0. Dumny ty z siebie jestes?");
             Console.WriteLine($"Killing {processID}");
         }
         [Command("guildicon")]
@@ -49,6 +50,27 @@ namespace OWuffel.Modules.Commands.OwnerCommands
             var a = Convert.ToInt32(s);
             var b = Context.User.PublicFlags.Value;
             await ReplyAsync(b.ToString().Replace("d", ""));
+        }
+        [Command("embed")]
+        public async Task embed(string nick)
+        {
+            var channels = "```\n--------------\n1:\n2:\n3:\n4:\n5:\n6:```";
+            var smallchannels = "```\n--------------\n1:\n2:\n3:\n4:```";
+            var em = new EmbedBuilder()
+                .WithAuthor(Context.User)
+                .WithColor(Color.Blue)
+                .WithDescription($"Poszukiwania frajera o nicku: **{nick}**.")
+                .AddField("Balenos               ", channels, true)
+                .AddField("Calpheon", channels, true)
+                .AddField("Mediah", channels, true)
+                .AddField("Serendia", channels, true)
+                .AddField("Valencia", channels, true)
+                .AddField("Velia", channels, true)
+                .AddField("Grana", smallchannels, true)
+                .AddField("Arsha", "```\n--------------\n1:```", true)
+                .AddField("Znaleziony?", "**NIE**", true)
+                .WithCurrentTimestamp();
+            await ReplyAsync(embed: em.Build());
         }
     }
 }
