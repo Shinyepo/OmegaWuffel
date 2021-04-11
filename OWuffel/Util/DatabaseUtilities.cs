@@ -255,7 +255,7 @@ namespace OWuffel.Util
         public async Task<ChannelCheckModel> ChannelCheckUpdateMessageIdAsync(ChannelCheckModel channelcheck)
         {
             using (var context = new WuffelDBContext())
-            {
+            {                
                 var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
                 ChannelCheck.MessageId = channelcheck.MessageId;
                 await context.SaveChangesAsync();
@@ -291,10 +291,18 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                var channelcheck = await context.ChannelChecks.LastAsync(c => c.GuildId == guild_id && c.Status == 1);
-                await context.DisposeAsync();
-                if (channelcheck == null) return new ChannelCheckModel();
-                return channelcheck;
+                try
+                {
+                    var channelcheck = await context.ChannelChecks.LastAsync(c => c.GuildId == guild_id && c.Status == 1);
+                    await context.DisposeAsync();
+                    if (channelcheck == null) return new ChannelCheckModel();
+                    return channelcheck;
+                }
+                catch (Exception)
+                {
+                    return new ChannelCheckModel();
+                }
+                
             }
         }
 

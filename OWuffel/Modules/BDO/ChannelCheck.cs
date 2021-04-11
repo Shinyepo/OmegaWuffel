@@ -104,7 +104,7 @@ namespace OWuffel.Modules.BDO
             var channelcheck = await _db.GetLastEmbedAsync(Context.Guild.Id);
             if (channelcheck.Id == 0)
             {
-                await ReplyAsync("Coś sie zjebało, pisz do szina :(");
+                await ReplyAsync("Nie ma aktywnego eventy. Uzyj **+find nick**");
                 return;
             }
             var balenosalias = new List<string> { "b", "bal", "balenos" };
