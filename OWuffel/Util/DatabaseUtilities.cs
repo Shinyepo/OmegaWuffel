@@ -47,6 +47,8 @@ namespace OWuffel.Util
             
         }
 
+        
+
         internal Task CreateChannelCheck(ChannelCheckModel channelcheck)
         {
             throw new NotImplementedException();
@@ -239,9 +241,12 @@ namespace OWuffel.Util
         public async Task<ChannelCheckModel> CreateChannelCheckAsync(ChannelCheckModel channelcheck)
         {
             using (var context = new WuffelDBContext())
-            {                
-                await _db.ChannelChecks.AddAsync(channelcheck);
-                await _db.SaveChangesAsync();
+            {
+                var embeds = context.ChannelChecks.AsQueryable().Where(f => f.GuildId == channelcheck.GuildId).ToList();
+                embeds.ForEach(a => a.Status = 0);
+                await context.SaveChangesAsync();
+                await context.ChannelChecks.AddAsync(channelcheck);
+                await context.SaveChangesAsync();
                 await context.DisposeAsync();
                 return channelcheck;
             }
@@ -251,9 +256,9 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                var ChannelCheck = await _db.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
+                var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
                 ChannelCheck.MessageId = channelcheck.MessageId;
-                await _db.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 await context.DisposeAsync();
                 return ChannelCheck;
             }
@@ -263,7 +268,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                var ChannelCheck = await _db.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == id && ch.Status == 1);
+                var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == id && ch.Status == 1);
                 await context.DisposeAsync();
                 return ChannelCheck;
             }
@@ -272,19 +277,79 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                var ChannelCheck = await _db.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
+                var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
                 if (ChannelCheck == null) return ChannelCheck;
                 ChannelCheck.Channels = channelcheck.Channels;
                 ChannelCheck.Status = channelcheck.Status;
-                await _db.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 await context.DisposeAsync();
                 return ChannelCheck;
             }
         }
 
+        public async Task<ChannelCheckModel> GetLastEmbedAsync(ulong guild_id)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var channelcheck = await context.ChannelChecks.LastAsync(c => c.GuildId == guild_id && c.Status == 1);
+                await context.DisposeAsync();
+                if (channelcheck == null) return new ChannelCheckModel();
+                return channelcheck;
+            }
+        }
+
 
         //-----------------------CHANNEL CHECKS BDO ---------------------------//
+        //----------------------- SUPPORT MODULE ------------------------------//
 
+        public async Task<SupportConfiguration> LookForConfigurationAsync(ulong guild_id)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var config = await context.SupportConfiguration.SingleOrDefaultAsync(c => c.GuildId == guild_id);
+                await context.DisposeAsync();
+                return config;
 
+            }
+        }
+
+        public async Task<SupportConfiguration> CreateSupportConfigurationAsync(SupportConfiguration supportconfig)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var isit = await LookForConfigurationAsync(supportconfig.GuildId);
+                if (isit != null)
+                {
+                    context.Remove(isit);
+                }
+                await context.SupportConfiguration.AddAsync(supportconfig);
+                await context.SaveChangesAsync();
+                await context.DisposeAsync();
+                return supportconfig;
+            }
+        }
+        public async Task<Tickets> CreateNewTicket(Tickets ticket)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var activeticket = context.Tickets.AsQueryable().Where(t => t.UserId == ticket.UserId && t.GuildId == ticket.GuildId).ToList();
+                int activecount = 0;
+                foreach (var item in activeticket)
+                {
+                    if (item.Status == 1)
+                    {
+                        activecount++;
+                    }
+                }
+                if (activecount > 2)
+                {
+                    return new Tickets();
+                }
+                context.Add(ticket);                
+                await context.SaveChangesAsync();
+                await context.DisposeAsync();
+                return ticket;
+            }
+        }
     }
 }

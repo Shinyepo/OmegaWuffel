@@ -159,6 +159,8 @@ namespace OWuffel.events
             });
             return Task.CompletedTask;
         }
+
+
         public Task RoleCreated(SocketRole role)
         {
             var _ = Task.Run(async () =>

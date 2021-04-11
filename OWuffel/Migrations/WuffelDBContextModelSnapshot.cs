@@ -224,6 +224,73 @@ namespace OWuffel.Migrations
 
                     b.ToTable("Suggestions");
                 });
+
+            modelBuilder.Entity("OWuffel.Extensions.Database.SupportConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("MessageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Notify")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("ParentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PremiumStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("TicketInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TicketMessage")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SupportConfiguration");
+                });
+
+            modelBuilder.Entity("OWuffel.Extensions.Database.Tickets", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("ChannelId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("ModeratorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("WhoClosedTicket")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tickets");
+                });
 #pragma warning restore 612, 618
         }
     }

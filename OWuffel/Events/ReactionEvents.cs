@@ -20,12 +20,53 @@ namespace OWuffel.Events
             _db = db;
         }
 
+        private async Task CreateNewTicketAsync(SupportConfiguration config, IUserMessage message, SocketGuildUser user)
+        {
+            try
+            {
+                var channel = message.Channel as SocketGuildChannel;
+                var guild = channel.Guild;
+
+                var cat = guild.CategoryChannels.SingleOrDefault(c=> c.Id == config.ParentId);
+
+                var ticket = new Tickets();
+                ticket.GuildId = guild.Id;
+                ticket.Status = 1;
+                ticket.UserId = user.Id;
+                ticket.Timestamp = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+
+                var newticket = await _db.CreateNewTicket(ticket);
+                if (newticket.Id == 0)
+                {
+                    await user.SendMessageAsync("You already have 3 active tickets. Wait for them to be resolved before creating new tickets.");
+                    return;
+                }
+
+                var chnl = await guild.CreateTextChannelAsync(ticket.Id + "-" + user.Username, c => c.CategoryId = config.ParentId);
+                await chnl.SyncPermissionsAsync();
+                var everyone = guild.EveryoneRole;
+                var everyoneoverride = new OverwritePermissions(viewChannel: PermValue.Deny);
+                var useroverride = new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow);
+                await chnl.AddPermissionOverwriteAsync(everyone, permissions: everyoneoverride);
+                await chnl.AddPermissionOverwriteAsync(user, permissions: useroverride);
+                await chnl.SendMessageAsync(user.Mention + ", this channel was created for your ticket. Please explain your matter as detailed as possible to make it easier for moderators to resolve your ticket.");
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+        }
+
+
         private async Task VoteMainTaskAsync(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel channel, SocketReaction reaction, Suggestions suggestion, string type)
         {
             var sw = Stopwatch.StartNew();
             Console.WriteLine("maintask start");
             var message = await msg.DownloadAsync();
-
+            
             var votelike = new Emoji("👍");
             var votedislike = new Emoji("👎");
             if (reaction.Emote.Name == votelike.Name)
@@ -89,6 +130,22 @@ namespace OWuffel.Events
                         sw.Stop();
                         Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s not 1");
                         return;
+                    }
+
+                    //support
+                    var support = await _db.LookForConfigurationAsync(chnl.Guild.Id);
+                    if (support != null)
+                    {
+                        if (support.MessageId == message.Id)
+                        {
+                            var emoji = new Emoji("📩");
+                            if (reaction.Emote.Name == emoji.Name)
+                            {
+                                var user = reaction.User.Value as SocketGuildUser;
+                                await CreateNewTicketAsync(support, message, user);
+                                await message.RemoveReactionAsync(emoji, reaction.UserId);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)

@@ -27,7 +27,7 @@ namespace OWuffel.Modules.BDO
         }
 
         [Command("find")]
-        [Alias("f", "channelcheck", "frajer")]
+        [Alias("f", "frajer")]
         public async Task findfrajer(string nick)
         {
             await Context.Message.DeleteAsync();
@@ -59,7 +59,7 @@ namespace OWuffel.Modules.BDO
                 .AddField("Serendia", elviachannels4, true)
                 .AddField("Valencia", elviachannels3, true)
                 .AddField("Velia", channels, true)
-                .AddField("Grana", smallchannels, true)
+                .AddField("Kamasylvia", smallchannels, true)
                 .AddField("Arsha", "```\n--------------\n1*:```", true)
                 .AddField("Znaleziony?", "**NIE**", true)
                 .AddField("Legenda:", "* - oznaczenie serwera typu Elvia", false)
@@ -71,15 +71,40 @@ namespace OWuffel.Modules.BDO
             insChannelCheck.MessageId = msg.Id;
             await _db.ChannelCheckUpdateMessageIdAsync(insChannelCheck);
         }
-        [Command("channel")]
-        [Alias("chck", "check")]
-        public async Task ChannelCheckAsync(int id, string channel, [Remainder]string status)
+        [Command("bingo")]
+        [Alias("jest")]
+        public async Task BingoChannelCkeck(string channel)
         {
             await Context.Message.DeleteAsync();
-            var channelcheck = await _db.GetChannelCheckAsync(id);
-            if (channelcheck == null)
+            var channelcheck = await _db.GetLastEmbedAsync(Context.Guild.Id);
+            if (channelcheck.Id == 0)
             {
-                await ReplyAsync("Nie ma aktywnego eventu z takim id.");
+                await ReplyAsync("Coś sie zjebało, pisz do szina :(");
+                return;
+            }
+            var msg = await Context.Guild.GetTextChannel(channelcheck.ChannelId).GetMessageAsync(channelcheck.MessageId) as IUserMessage;
+            if (msg == null) return;
+
+            var em = new EmbedBuilder()
+                .WithAuthor(Context.User)
+                .WithColor(Color.Green)
+                .WithDescription($"**{channelcheck.Target}** jest na **{channel}**")
+                .WithFooter($"Id embeda: {channelcheck.Id}")
+                .WithCurrentTimestamp();
+
+            await msg.ModifyAsync(m => m.Embed = em.Build());
+            channelcheck.Status = 0;
+            await _db.UpdateCheckChannelsAsync(channelcheck);
+        }
+        [Command("channel")]
+        [Alias("chck", "check")]
+        public async Task ChannelCheckAsync(string channel)
+        {
+            await Context.Message.DeleteAsync();
+            var channelcheck = await _db.GetLastEmbedAsync(Context.Guild.Id);
+            if (channelcheck.Id == 0)
+            {
+                await ReplyAsync("Coś sie zjebało, pisz do szina :(");
                 return;
             }
             var balenosalias = new List<string> { "b", "bal", "balenos" };
@@ -96,6 +121,7 @@ namespace OWuffel.Modules.BDO
 
             var em = msg.Embeds.First().ToEmbedBuilder();
             em.Fields.Clear();
+            var status = "Nie ma go";
             CheckModel model = JsonConvert.DeserializeObject<CheckModel>(channelcheck.Channels);
             var channelnumber = channel[channel.Length - 1].ToString();
             var channelalias = channel.ToLower().Remove(channel.Length - 1, 1);
@@ -104,7 +130,13 @@ namespace OWuffel.Modules.BDO
                 await ReplyAsync("Nie ma takiego kanalu głupku");
                 return;
             }
+            if (arsha.Contains(channelalias))
+            {
+                channelnumber = "1";
+            }
             int number = Convert.ToInt32(channelnumber);
+
+            
             if (number < 1 || number > 6)
             {
                 await ReplyAsync("Nie ma takiego kanalu głupku");
@@ -251,7 +283,7 @@ namespace OWuffel.Modules.BDO
             em.AddField("Serendia", serendiafield, true);
             em.AddField("Valencia", valenciafield, true);
             em.AddField("Velia", veliafield, true);
-            em.AddField("Grana", granafield, true);
+            em.AddField("Kamasylvia", granafield, true);
             em.AddField("Arsha", arshafield, true);
             
             if (status.ToLower() == "bingo" || status.ToLower() == "tak" || status.ToLower() == "znaleziony")

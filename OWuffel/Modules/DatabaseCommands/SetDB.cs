@@ -21,6 +21,7 @@ namespace OWuffel.Modules.DatabaseCommands
         }
 
         [Command("setdb")]
+        [RequireOwner]
         public async Task setdbAsync(string key, string value)
         {
             if (Context.Settings == null) return;
