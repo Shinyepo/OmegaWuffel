@@ -94,6 +94,7 @@ namespace OWuffel.Services
             _discord.ReactionAdded += _reactionevets.ReactionAdded;
             _discord.ReactionRemoved += _reactionevets.ReactionRemoved;
             _discord.ReactionsCleared += _reactionevets.ReactionCleared;
+            _discord.ChannelUpdated += _guildevents.ChannelUpdated;
 
             if (!_instanceOfLavaNode.IsConnected)
             {

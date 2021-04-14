@@ -13,10 +13,11 @@ namespace OWuffel.Extensions.Database
         public int Id { get; set; }
         public ulong GuildId { get; set; }
         public ulong ParentId { get; set; }
+        public ulong ActiveTicketsId { get; set; }
         public ulong TicketInfoId { get; set; }
         public ulong MessageId { get; set; }
         public int Notify { get; set; }
         public string TicketMessage { get; set; }
-        public int PremiumStatus { get; set; }
+        public int PremiumStatus { get; set; }        
     }
 }

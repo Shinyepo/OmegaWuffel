@@ -44,15 +44,22 @@ namespace OWuffel.Events
 
                 var chnl = await guild.CreateTextChannelAsync(ticket.Id + "-" + user.Username, c => c.CategoryId = config.ParentId);
                 await chnl.SyncPermissionsAsync();
-                var everyone = guild.EveryoneRole;
-                var everyoneoverride = new OverwritePermissions(viewChannel: PermValue.Deny);
                 var useroverride = new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow);
-                await chnl.AddPermissionOverwriteAsync(everyone, permissions: everyoneoverride);
                 await chnl.AddPermissionOverwriteAsync(user, permissions: useroverride);
-                await chnl.SendMessageAsync(user.Mention + ", this channel was created for your ticket. Please explain your matter as detailed as possible to make it easier for moderators to resolve your ticket.");
-
-
-
+                string desc = user.Mention + ", this channel was created for your ticket. Please explain your matter as detailed as possible to make it easier for moderators to resolve your ticket.";
+                if (config.TicketMessage != "")
+                {
+                    desc = config.TicketMessage;
+                }
+                var em = new EmbedBuilder()
+                    .WithTitle("Ticket information")
+                    .WithColor(Color.Green)
+                    .WithDescription(desc);
+                await chnl.SendMessageAsync(embed: em.Build());
+                var count = await _db.NumberOfActiveTickets(guild.Id);
+                var activetickets = guild.GetVoiceChannel(config.ActiveTicketsId);
+                var name = $"Active Tickets: {count}";
+                await activetickets.ModifyAsync(c => c.Name = name);
             }
             catch (Exception ex)
             {
@@ -113,8 +120,8 @@ namespace OWuffel.Events
                 try
                 {
 
-                    var sw = Stopwatch.StartNew();
-                    Console.WriteLine(sw + " start reactionadded");
+                    //var sw = Stopwatch.StartNew();
+                    //Console.WriteLine(sw + " start reactionadded");
                     var message = await msg.DownloadAsync();
                     var chnl = channel as SocketGuildChannel;
                     var suggestion = await _db.LoopSuggestions(chnl.Guild.Id, msg.Id);
@@ -123,12 +130,12 @@ namespace OWuffel.Events
                         if (suggestion.Status == 1)
                         {
                             await VoteMainTaskAsync(msg, channel, reaction, suggestion, "added");
-                            sw.Stop();
-                            Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s passed");
+                            //sw.Stop();
+                            //Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s passed");
                             return;
                         }
-                        sw.Stop();
-                        Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s not 1");
+                        //sw.Stop();
+                        //Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s not 1");
                         return;
                     }
 

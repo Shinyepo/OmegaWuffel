@@ -79,7 +79,7 @@ namespace OWuffel.Modules.BDO
             var channelcheck = await _db.GetLastEmbedAsync(Context.Guild.Id);
             if (channelcheck.Id == 0)
             {
-                await ReplyAsync("Coś sie zjebało, pisz do szina :(");
+                await ReplyAsync("Nie ma aktywnego eventy. Uzyj **+find nick**");
                 return;
             }
             var msg = await Context.Guild.GetTextChannel(channelcheck.ChannelId).GetMessageAsync(channelcheck.MessageId) as IUserMessage;

@@ -336,6 +336,45 @@ namespace OWuffel.Util
                 return supportconfig;
             }
         }
+        public async Task<SupportConfiguration> ChangeTicketMessageAsync(ulong guild_id, string message)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var config = await context.SupportConfiguration.SingleOrDefaultAsync(c => c.GuildId == guild_id);
+                if (config == null)
+                {
+                    return new SupportConfiguration();
+                }
+                config.TicketMessage = message;
+                await context.SaveChangesAsync();
+                await context.DisposeAsync();
+                return config;
+            }
+        }
+        public async Task<int> NumberOfActiveTickets(ulong guild_id)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var number = context.Tickets.Count(t => t.GuildId == guild_id && t.Status == 1);
+                await context.DisposeAsync();
+                return number;
+            }
+        }
+        public async Task<List<int>> TicketStatsAsync(ulong guild_id)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var active = context.Tickets.Count(t => t.GuildId == guild_id && t.Status == 1);
+                var closed = context.Tickets.Count(t => t.GuildId == guild_id && t.Status == 0);
+                var total = context.Tickets.Count(t => t.GuildId == guild_id);
+                var list = new List<int>();
+                list.Add(active);
+                list.Add(closed);
+                list.Add(total);
+                await context.DisposeAsync();
+                return list;
+            }
+        }
         public async Task<Tickets> CreateNewTicket(Tickets ticket)
         {
             using (var context = new WuffelDBContext())

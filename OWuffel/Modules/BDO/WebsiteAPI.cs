@@ -144,7 +144,7 @@ namespace OWuffel.Modules.BDO
                         var characterlist = profiledata.Split("<ul class=\"character_list\">")[1].Split("</article>")[0];
                         var count = characterlist.Split("<li>");
                         bool countcheck = false;
-                        if (count.Count() > 30)
+                        if (count.Count() > 22)
                         {
                             countcheck = count[2].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
 

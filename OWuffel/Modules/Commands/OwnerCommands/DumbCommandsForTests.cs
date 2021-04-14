@@ -5,8 +5,10 @@ using OWuffel.Models;
 using OWuffel.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -71,6 +73,34 @@ namespace OWuffel.Modules.Commands.OwnerCommands
                 .AddField("Znaleziony?", "**NIE**", true)
                 .WithCurrentTimestamp();
             await ReplyAsync(embed: em.Build());
+        }
+        [Command("editname")]
+        public async Task editname(string name)
+        {
+            var chnl = Context.Guild.GetVoiceChannel(831134028492963850);
+            await chnl.ModifyAsync(c => c.Name = name);
+        }
+        [Command("Sss")]
+        public async Task Sss([Remainder][Optional]string timezone)
+        {
+            var currdate = DateTime.Now;
+            var tz = TimeZoneInfo.Local;
+            string s = "";
+            var gottz = TimeZoneInfo.GetSystemTimeZones();
+            TimeZoneInfo fromarg = TimeZoneInfo.Local;
+
+            foreach (var item in gottz)
+            {
+                s += item.Id + "\n";
+            }
+            if (timezone != null)
+            {
+                 fromarg = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+            }
+            s = s.Substring(0, 1500);
+            await ReplyAsync(fromarg+"\n"+fromarg.BaseUtcOffset.ToString());
+            await ReplyAsync(s);
+                
         }
     }
 }

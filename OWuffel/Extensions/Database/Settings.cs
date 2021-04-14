@@ -53,6 +53,9 @@ namespace OWuffel.Extensions.Database
         public ulong logRoleUpdated { get; set; }
         public ulong logRoleDeleted { get; set; }
         public ulong logGuildUpdated { get; set; }
+        public ulong logChannelUpdated { get; set; }
+        public ulong logChannelCreated { get; set; }
+        public ulong logChannelDeleted { get; set; }
 
 
         //Suggestionconfig

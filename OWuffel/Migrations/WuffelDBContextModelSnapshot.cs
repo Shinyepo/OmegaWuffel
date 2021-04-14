@@ -92,6 +92,15 @@ namespace OWuffel.Migrations
                     b.Property<ulong>("guild_id")
                         .HasColumnType("INTEGER");
 
+                    b.Property<ulong>("logChannelCreated")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("logChannelDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("logChannelUpdated")
+                        .HasColumnType("INTEGER");
+
                     b.Property<ulong>("logEmoteCreated")
                         .HasColumnType("INTEGER");
 
@@ -229,6 +238,9 @@ namespace OWuffel.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("ActiveTicketsId")
                         .HasColumnType("INTEGER");
 
                     b.Property<ulong>("GuildId")

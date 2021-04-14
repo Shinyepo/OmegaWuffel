@@ -160,6 +160,39 @@ namespace OWuffel.events
             return Task.CompletedTask;
         }
 
+        internal Task ChannelUpdated(SocketChannel channel1, SocketChannel channel2)
+        {
+            var _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var chnl = channel1 as SocketGuildChannel;
+                    var chnl2 = channel2 as SocketGuildChannel;
+                    var guild = chnl.Guild;
+                    var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+                    if (Settings.logChannelUpdated == 0) return;
+                    ITextChannel channel = guild.GetTextChannel(Settings.logChannelUpdated);
+
+                    if (chnl.Name != chnl2.Name)
+                    {
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.WithTitle($"Channel updated.")
+                                 .WithColor(Color.Blue)
+                                 .WithDescription($"Cipa huj na szybko: {chnl.Name} -> {chnl2.Name}.")
+                                 .WithCurrentTimestamp();
+
+                        await channel.SendMessageAsync(embed: embed.Build());
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn(ex);
+                }
+                return;
+            });
+            return Task.CompletedTask;
+        }
 
         public Task RoleCreated(SocketRole role)
         {
