@@ -119,6 +119,8 @@ namespace OWuffel.Modules.Commands.OwnerCommands
                     foreach (var item in channels)
                     {
                         var list = await item.GetMessagesAsync(100).FlattenAsync();
+                        int count = list.Count();
+                        if (count < 1) continue;
                         var fulllist = false;
                         IMessage lastmsg = list.Last();
                         while (!fulllist)
