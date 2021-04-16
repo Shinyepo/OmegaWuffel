@@ -4,6 +4,7 @@ using OWuffel.Extensions.Database;
 using OWuffel.Services;
 using OWuffel.Util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -166,24 +167,83 @@ namespace OWuffel.events
             {
                 try
                 {
-                    var chnl = channel1 as SocketGuildChannel;
+                    var chnl1 = channel1 as SocketGuildChannel;
                     var chnl2 = channel2 as SocketGuildChannel;
-                    var guild = chnl.Guild;
+                    var guild = chnl1.Guild;
                     var Settings = await _db.GetGuildSettingsAsync(guild.Id);
                     if (Settings.logChannelUpdated == 0) return;
                     ITextChannel channel = guild.GetTextChannel(Settings.logChannelUpdated);
 
-                    if (chnl.Name != chnl2.Name)
+                    //if (chnl.Name != chnl2.Name)
+                    //{
+                    //    EmbedBuilder embed = new EmbedBuilder();
+                    //    embed.WithTitle($"Channel updated.")
+                    //             .WithColor(Color.Blue)
+                    //             .WithDescription($"Cipa huj na szybko: {chnl.Name} -> {chnl2.Name}.")
+                    //             .WithCurrentTimestamp();
+
+                    //    await channel.SendMessageAsync(embed: embed.Build());
+                    //}
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////
+                    var list1 = chnl1.PermissionOverwrites.ToList();
+                    var list2 = chnl2.PermissionOverwrites.ToList();
+                    if (!list1.SequenceEqual(list2))
                     {
-                        EmbedBuilder embed = new EmbedBuilder();
-                        embed.WithTitle($"Channel updated.")
-                                 .WithColor(Color.Blue)
-                                 .WithDescription($"Cipa huj na szybko: {chnl.Name} -> {chnl2.Name}.")
-                                 .WithCurrentTimestamp();
+                        var staralista = list1.Where(p => !list2.Contains(p)).ToList();
+                        var nowalista = list2.Where(p => !list1.Contains(p)).ToList();
 
-                        await channel.SendMessageAsync(embed: embed.Build());
+                        if (staralista.Count == 0)
+                        {
+                            var dodane = "";
+                        }
+
+                        if (nowalista.Count == 0)
+                        {
+                            var usuniete = "";
+                        }
+                        if (staralista.Count > 0 && nowalista.Count > 0)
+                        {
+                            var listtt1 = staralista[0].Permissions.ToAllowList();
+                            var listtt2 = nowalista[0].Permissions.ToAllowList();
+                            var minus = listtt1.Where(p => !listtt2.Contains(p)).ToList();
+                            var plus = listtt2.Where(p => !listtt1.Contains(p)).ToList();
+
+                            var stringdodany = "";
+                            var stringusuniety = "";
+                            var nazwacelu = "";
+                            if (staralista[0].TargetType == PermissionTarget.Role)
+                            {
+                                nazwacelu = guild.GetRole(staralista[0].TargetId).Name;
+                            } else if (staralista[0].TargetType == PermissionTarget.User)
+                            {
+                                nazwacelu = guild.GetUser(staralista[0].TargetId).Username;
+                            }
+                            foreach (var item1 in plus)
+                            {
+                                stringdodany += item1.ToString() + "\n";
+                            }
+
+                            foreach (var item2 in minus)
+                            {
+                                stringusuniety += item2.ToString() + "\n";
+                            }
+                            var embed = new EmbedBuilder()
+                            .WithTitle($"Update roli {nazwacelu}")
+                            .WithColor(Color.Green);
+                            if (stringdodany != "")
+                            {
+                                embed.AddField("dodane: ", stringdodany, true);
+                            }
+                            if (stringusuniety != "")
+                            {
+                                embed.AddField("usuniete: ", stringusuniety, true);
+                            }
+
+                            await channel.SendMessageAsync(embed: embed.Build());
+
+                            
+                        }
                     }
-
                 }
                 catch (Exception ex)
                 {

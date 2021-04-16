@@ -398,5 +398,36 @@ namespace OWuffel.Util
                 return ticket;
             }
         }
+
+        //---------------------------------------Daily Rankings----------------------------------------//
+        public async Task<DailyRanking> CreateDailyRankingConfigAsync(DailyRanking daily)
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var existing = await context.DailyRankings.SingleOrDefaultAsync(d => d.GuildId == daily.GuildId);
+                if (existing != null)
+                {
+                    existing.ChannelId = daily.ChannelId;
+                    await context.SaveChangesAsync();
+                    await context.DisposeAsync();
+                    return existing;
+                } else
+                {
+                    await context.DailyRankings.AddAsync(daily);
+                    await context.SaveChangesAsync();
+                    await context.DisposeAsync();
+                    return daily;
+                }
+            }
+        }
+        public async Task<List<DailyRanking>> GetAllDailyRankingsConfigruations()
+        {
+            using (var context = new WuffelDBContext())
+            {
+                var list = context.DailyRankings.ToList();
+                return list;
+            }
+        }
+
     }
 }

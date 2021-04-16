@@ -193,7 +193,7 @@ namespace OWuffel.Modules.Commands.AdminCommands
             await m.DeleteAsync();
 
 
-        }
+        }        
         [Command("purge", RunMode = RunMode.Async)]
         [Alias("prune")]
         [RequireUserPermission(GuildPermission.ManageMessages)]

@@ -53,6 +53,26 @@ namespace OWuffel.Migrations
                     b.ToTable("ChannelChecks");
                 });
 
+            modelBuilder.Entity("OWuffel.Extensions.Database.DailyRanking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("ChannelId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong>("GuildId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IgnoreId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DailyRankings");
+                });
+
             modelBuilder.Entity("OWuffel.Extensions.Database.Settings", b =>
                 {
                     b.Property<int>("id")

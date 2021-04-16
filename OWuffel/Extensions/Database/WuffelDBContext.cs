@@ -27,5 +27,6 @@ namespace OWuffel.Extensions.Database
         public DbSet<ChannelCheckModel> ChannelChecks { get; set; }
         public DbSet<SupportConfiguration> SupportConfiguration { get; set; }
         public DbSet<Tickets> Tickets { get; set; }
+        public DbSet<DailyRanking> DailyRankings { get; set; }
     }
 }

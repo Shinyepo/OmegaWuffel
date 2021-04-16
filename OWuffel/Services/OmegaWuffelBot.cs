@@ -85,7 +85,7 @@ namespace OWuffel.Services
 
 
             SetupShard(parentPorcessId);
-        }
+        }        
 
         private static void SetupShard(int parentProcessId)
         {
@@ -144,8 +144,9 @@ namespace OWuffel.Services
             await _sp.AllShardsReadyAsync();
             var commandHandler = services.GetService<CommandHandler>().InitializeAsync();
             var CommandService = services.GetService<CommandService>();
-            var _ = await CommandService.AddModulesAsync(this.GetType().GetTypeInfo().Assembly, services)
-             .ConfigureAwait(false);
+            //var _ = await CommandService.AddModulesAsync(this.GetType().GetTypeInfo().Assembly, services)
+            // .ConfigureAwait(false);
+
 
 
 
