@@ -12,8 +12,9 @@ namespace OWuffel.Extensions.Database
         }*/
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            var path = Path.Combine("Extensions", "Database", "Wuffel.db");
-            options.UseSqlite($"Data Source={path}");
+            //var path = Path.Combine("Extensions", "Database", "Wuffel.db");
+            //options.UseSqlite($"Data Source={path}");
+            options.UseNpgsql("Server=192.168.1.14;Port=5454;Database=OWuffel;User Id=OWuffelDashboard;Password=p@Zaj0swUbr;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

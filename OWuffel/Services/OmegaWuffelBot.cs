@@ -26,6 +26,7 @@ using System.Runtime.CompilerServices;
 using Serilog.Sinks.SystemConsole.Themes;
 using Discord.Addons.Interactive;
 using Interactivity;
+using OWuffel.Modules.Commands;
 
 namespace OWuffel.Services
 {
@@ -43,6 +44,8 @@ namespace OWuffel.Services
         private ServicesConfiguration _sp;
         private LavaConfig LavaConfig;
 
+
+
         public OmegaWuffelBot(int shardId, int parentPorcessId)
         {
             if (shardId < 0)
@@ -53,7 +56,7 @@ namespace OWuffel.Services
             var OutputTemplate = "Shard #" + shardId + ": [{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 
             Serilog.Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Debug()
                 .WriteTo.Console(outputTemplate: OutputTemplate, theme: AnsiConsoleTheme.Literate)
                 .WriteTo.File(path, rollingInterval: RollingInterval.Day, outputTemplate: OutputTemplate)
                 .CreateLogger();
@@ -62,7 +65,7 @@ namespace OWuffel.Services
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 MessageCacheSize = 100,
-                LogLevel = LogSeverity.Warning,
+                LogLevel = LogSeverity.Debug,
                 ConnectionTimeout = int.MaxValue,
                 TotalShards = Config.TotalShards,
                 ShardId = shardId,
@@ -80,13 +83,13 @@ namespace OWuffel.Services
             LavaConfig = new LavaConfig
             {
                 SelfDeaf = true,
-                LogSeverity = LogSeverity.Verbose,
+                LogSeverity = LogSeverity.Debug,
             };
 
 
             SetupShard(parentPorcessId);
-        }        
-
+        }
+        
         private static void SetupShard(int parentProcessId)
         {
             new Thread(new ThreadStart(() =>
@@ -176,6 +179,10 @@ namespace OWuffel.Services
             var sw = Stopwatch.StartNew();
 
             var _bot = Client.CurrentUser;
+            var conf = new InteractivityConfig()
+            {
+                DefaultTimeout = TimeSpan.FromMinutes(5) 
+            };
 
             var s = new ServiceCollection()
                 .AddSingleton(Config)
@@ -194,7 +201,7 @@ namespace OWuffel.Services
                 .AddSingleton<ReactionEvents>()
                 .AddSingleton<DatabaseUtilities>()
                 .AddSingleton<VoiceChannelEvents>()
-                .AddSingleton(new InteractivityService(Client, TimeSpan.FromMinutes(5)))
+                .AddSingleton(new InteractivityService(Client, conf))
                 .AddSingleton<InteractiveService>();
 
 

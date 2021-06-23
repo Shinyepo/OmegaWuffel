@@ -186,7 +186,7 @@ namespace OWuffel.Modules.Commands.Events
                 {
                     if (toignore.Count == 0 && values.ToLower() == "all")
                     {
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreVoiceStateUpdated", null);
+                        await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreVoiceStateUpdated", null);
                         em.WithTitle("Log unignore success")
                             .WithColor(Color.Green)
                             .WithDescription("Successfuly removed all entries from the ignore list for VoicePresence event.");
@@ -230,7 +230,7 @@ namespace OWuffel.Modules.Commands.Events
                     }
                     var todb = String.Join(",", ignoredvoice);
                     if (todb == "") todb = null;
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreVoiceStateUpdated", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreVoiceStateUpdated", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -248,7 +248,7 @@ namespace OWuffel.Modules.Commands.Events
                 {
                     if (toignore.Count == 0 && values.ToLower() == "all")
                     {
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageUpdated", null);
+                        await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageUpdated", null);
                         em.WithTitle("Log unignore success")
                             .WithColor(Color.Green)
                             .WithDescription("Successfuly removed all entries from the ignore list for MessageUpdated event.");
@@ -292,7 +292,7 @@ namespace OWuffel.Modules.Commands.Events
                     }
                     var todb = String.Join(",", ignoredupdate);
                     if (todb == "") todb = null;
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageUpdated", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageUpdated", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -310,7 +310,7 @@ namespace OWuffel.Modules.Commands.Events
                 {
                     if (toignore.Count == 0 && values.ToLower() == "all")
                     {
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageDeleted", null);
+                        await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageDeleted", null);
                         em.WithTitle("Log unignore success")
                             .WithColor(Color.Green)
                             .WithDescription("Successfuly removed all entries from the ignore list for MessageDeleted event.");
@@ -354,7 +354,7 @@ namespace OWuffel.Modules.Commands.Events
                     }
                     var todb = String.Join(",", ignoreddelete);
                     if (todb == "") todb = null;
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageDeleted", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageDeleted", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -372,8 +372,8 @@ namespace OWuffel.Modules.Commands.Events
                 {
                     if (toignore.Count == 0 && values.ToLower() == "all")
                     {
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageDeleted", null);
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageUpdated", null);
+                        await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageDeleted", null);
+                        await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageUpdated", null);
                         em.WithTitle("Log unignore success")
                             .WithColor(Color.Green)
                             .WithDescription("Successfuly removed all entries from the ignore list for MessageEvents event.");
@@ -414,8 +414,8 @@ namespace OWuffel.Modules.Commands.Events
                     var todb = String.Join(",", ignoreddelete);
                     if (todb == "") todb = null;
                     if (todbdelete == "") todbdelete = null;
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageDeleted", todbdelete);
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageUpdated", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageDeleted", todbdelete);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageUpdated", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -537,7 +537,7 @@ namespace OWuffel.Modules.Commands.Events
                         return;
                     }
                     var todb = String.Join(",", ignoredvoice);
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreVoiceStateUpdated", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreVoiceStateUpdated", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -591,7 +591,7 @@ namespace OWuffel.Modules.Commands.Events
                         return;
                     }
                     var todb = String.Join(",", ignoredmessageupdate);
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageUpdated", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageUpdated", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -645,7 +645,7 @@ namespace OWuffel.Modules.Commands.Events
                         return;
                     }
                     var todb = String.Join(",", ignoredmessagedeleted);
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageDeleted", todb);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageDeleted", todb);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -729,8 +729,8 @@ namespace OWuffel.Modules.Commands.Events
                     }
                     var todbupdate = String.Join(",", ignoredmessageupdate);
 
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageUpdated", todbupdate);
-                    await _db.SetSettingsValueAsync(Context.Guild.Id, "logIgnoreMessageDeleted", todbdelete);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageUpdated", todbupdate);
+                    await _db.SetSettingsValueAsync(Context.Guild, "logIgnoreMessageDeleted", todbdelete);
                     var toembed = "";
                     if (userlist.Count > 0) toembed = toembed + String.Join(", ", userlist);
                     if (channellist.Count > 0) toembed = toembed + " " + String.Join(", ", channellist);
@@ -820,12 +820,12 @@ namespace OWuffel.Modules.Commands.Events
                             await ReplyAsync("Provided value is not a existing channel");
                             return;
                         }
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, found.Name, chnl.Id);
+                        await _db.SetSettingsValueAsync(Context.Guild, found.Name, chnl.Id);
                         await ReplyAsync($"{found.Name.Replace("log", "")} related logs will be sent to {chnl.Mention}.");
                     }
                     else
                     {
-                        await _db.SetSettingsValueAsync(Context.Guild.Id, found.Name, 0);
+                        await _db.SetSettingsValueAsync(Context.Guild, found.Name, 0);
                         await ReplyAsync($"Disabled logs for {found.Name.Replace("log", "")}.");
                     }
 

@@ -19,7 +19,7 @@ namespace OWuffel.Util
                 var Setting = new Settings();
                 Setting.guild_id = guild;
                 Setting.botDisabledCommands = "[{}]";
-                Setting.botActive = 1;
+                Setting.botActive = true;
                 await _db.Settings.AddAsync(Setting);
                 await _db.SaveChangesAsync();
                 return Setting;

@@ -17,142 +17,14 @@ namespace OWuffel.Modules.Commands
 {
     public class Misc : ModuleBase<Cipska>
     {
-        private Timer timer;
         private DatabaseUtilities _db;
         private DiscordSocketClient _client;
 
-        private void SetUpTimer(TimeSpan alertTime)
-        {
-            DateTime current = DateTime.UtcNow;
-            TimeSpan timeToGo = alertTime - current.TimeOfDay;
-            if (timeToGo < TimeSpan.Zero)
-            {
-                return;//time already passed
-            }
-            this.timer = new Timer(x =>
-            {
-                this.SomeMethodRunsAt1600();
-            }, null, timeToGo, Timeout.InfiniteTimeSpan);
-        }
-
-        private void SomeMethodRunsAt1600()
-        {
-            var _ = Task.Run(async () =>
-            {
-                try
-                {
-                    Log.Info("Started the daily message ranking loop.");
-                    var configlist = await _db.GetAllDailyRankingsConfigruations();
-                    
-                    foreach (var guild in _client.Guilds)
-                    {
-                        var config = configlist.SingleOrDefault(g => g.GuildId == guild.Id);
-                        if (config != null)
-                        {
-                            var channels = guild.TextChannels.ToList();
-                            var done = false;
-                            var top = new List<UserRanking>();
-                            var currdate = DateTime.UtcNow.Day;
-                            var sw = Stopwatch.StartNew();
-                            ulong total = 0;
-                            while (!done)
-                            {
-                                foreach (var item in channels)
-                                {
-                                    var list = await item.GetMessagesAsync(100).FlattenAsync();
-                                    int count = list.Count();
-                                    if (count < 1) continue;
-                                    var fulllist = false;
-                                    IMessage lastmsg = list.Last();
-                                    while (!fulllist)
-                                    {
-                                        foreach (var msg in list)
-                                        {
-                                            lastmsg = msg;
-
-                                            if (msg.CreatedAt.Day == currdate)
-                                            {
-                                                total += 1;
-                                                if (msg.Author.IsBot) continue;
-                                                var isin = top.FirstOrDefault(e => e.AuthorId == msg.Author.Id);
-                                                if (isin != null)
-                                                {
-                                                    var entry = top.FirstOrDefault(e => e.AuthorId == msg.Author.Id);
-                                                    entry.Count += 1;
-                                                }
-                                                else
-                                                {
-                                                    var entry = new UserRanking();
-                                                    entry.AuthorId = msg.Author.Id;
-                                                    entry.Count = 1;
-                                                    top.Add(entry);
-                                                }
-                                            }
-                                            else if (msg.CreatedAt.Day != currdate)
-                                            {
-                                                fulllist = true;
-                                                break;
-                                            }
-
-                                        }
-                                        if (!fulllist)
-                                        {
-                                            list = await item.GetMessagesAsync(lastmsg, Direction.Before, 100).FlattenAsync();
-                                        }
-                                    }
-                                }
-                                done = true;
-                            }
-                            top.Sort(delegate (UserRanking x, UserRanking y)
-                            {
-                                if (x.Count == 0 && y.Count == 0) return 0;
-                                else if (x.Count == 0) return -1;
-                                else if (y.Count == 0) return 1;
-                                else return y.Count.CompareTo(x.Count);
-                            });
-                            sw.Stop();
-                            var userone = guild.GetUser(top[0].AuthorId).Username;
-                            var usertwo = guild.GetUser(top[1].AuthorId).Username;
-                            var userthree = guild.GetUser(top[2].AuthorId).Username;
-                            var userfour = guild.GetUser(top[3].AuthorId).Username;
-                            var userfive = guild.GetUser(top[4].AuthorId).Username;
-                            var value = ((double)top[0].Count / total) * 100;
-                            var perone = Convert.ToInt32(Math.Round(value, 0));
-                            value = ((double)top[1].Count / total) * 100;
-                            var pertwo = Convert.ToInt32(Math.Round(value, 0));
-                            value = ((double)top[2].Count / total) * 100;
-                            var perthree = Convert.ToInt32(Math.Round(value, 0));
-                            value = ((double)top[3].Count / total) * 100;
-                            var perfour = Convert.ToInt32(Math.Round(value, 0));
-                            value = ((double)top[4].Count / total) * 100;
-                            var perfive = Convert.ToInt32(Math.Round(value, 0));
-                            var em = new EmbedBuilder()
-                                .WithTitle("Daily ranking")
-                                .WithColor(Color.Gold)
-                                .WithThumbnailUrl("https://cdn.discordapp.com/attachments/812328100988977166/831968859488911410/trophy.png")
-                                .WithDescription($"**Today's top spammers are:**\n\n🥇 **{userone}** - **{top[0].Count}**({perone}% of total) messages\n🥈 **{usertwo}** - **{top[1].Count}**({pertwo}% of total) messages\n🥉 **{userthree}** - **{top[2].Count}**({perthree}% of total) messages\n<:medal4:831979903049007114> **{userfour}** - **{top[3].Count}**({perfour}% of total) messages\n<:medal5:831979917230735381> **{userfive}** - **{top[4].Count}**({perfive}% of total) messages\n\nTotal number of messages sent today - **{total}**")
-                                .WithFooter($"It took me {sw.Elapsed.TotalSeconds:F0}s to gather this data.");
-                            await guild.GetTextChannel(config.ChannelId).SendMessageAsync(embed: em.Build());
-                        }
-                    }
-                    Log.Info("Finished daily message ranking loop.");
-
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-            });
-
-        }
+        
         public Misc(DatabaseUtilities db, DiscordSocketClient client)
         {
             _db = db;
-            _client = client;
-            Log.Info("Setting up ranking loop.");
-            SetUpTimer(new TimeSpan(23,55,00));
-            Log.Info("Finished setting up loop.");
+            _client = client;            
         }
         [Command("Avatar")]
         public async Task avatar([Optional] SocketGuildUser user)
@@ -271,102 +143,22 @@ namespace OWuffel.Modules.Commands
             await _db.CreateDailyRankingConfigAsync(config);
             await ReplyAsync($"Subscribed daily message ranking to **{channel.Mention}**.");
         }
-        [Command("topmsg", RunMode = RunMode.Async)]
-        public async Task TopMsgAsync([Optional] string arg)
+        [Command("topmsg")]
+        public async Task TopMsgAsync()
         {
-            try
+            var config = await _db.GetGuildDailyRankingConfigAsync(Context.Guild.Id);
+            if (config == null)
             {
-                var channels = Context.Guild.TextChannels.ToList();
-                var done = false;
-                var top = new List<UserRanking>();
-                var currdate = DateTime.UtcNow.Day;
-                var sw = Stopwatch.StartNew();
-                ulong total = 0;
-                while (!done)
-                {
-                    foreach (var item in channels)
-                    {
-                        var list = await item.GetMessagesAsync(100).FlattenAsync();
-                        int count = list.Count();
-                        if (count < 1) continue;
-                        var fulllist = false;
-                        IMessage lastmsg = list.Last();
-                        while (!fulllist)
-                        {
-                            foreach (var msg in list)
-                            {
-                                lastmsg = msg;
-
-                                if (msg.CreatedAt.Day == currdate)
-                                {
-                                    total += 1;
-                                    if (msg.Author.IsBot) continue;
-                                    var isin = top.FirstOrDefault(e => e.AuthorId == msg.Author.Id);
-                                    if (isin != null)
-                                    {
-                                        var entry = top.FirstOrDefault(e => e.AuthorId == msg.Author.Id);
-                                        entry.Count += 1;
-                                    }
-                                    else
-                                    {
-                                        var entry = new UserRanking();
-                                        entry.AuthorId = msg.Author.Id;
-                                        entry.Count = 1;
-                                        top.Add(entry);
-                                    }
-                                }
-                                else if (msg.CreatedAt.Day != currdate)
-                                {
-                                    fulllist = true;
-                                    break;
-                                }
-
-                            }
-                            if (!fulllist)
-                            {
-                                list = await item.GetMessagesAsync(lastmsg, Direction.Before, 100).FlattenAsync();
-                            }
-                        }
-                    }
-                    done = true;
-                }
-                top.Sort(delegate (UserRanking x, UserRanking y)
-                {
-                    if (x.Count == 0 && y.Count == 0) return 0;
-                    else if (x.Count == 0) return -1;
-                    else if (y.Count == 0) return 1;
-                    else return y.Count.CompareTo(x.Count);
-                });
-                sw.Stop();
-                var userone = Context.Guild.GetUser(top[0].AuthorId).Username;
-                var usertwo = Context.Guild.GetUser(top[1].AuthorId).Username;
-                var userthree = Context.Guild.GetUser(top[2].AuthorId).Username;
-                var userfour = Context.Guild.GetUser(top[3].AuthorId).Username;
-                var userfive = Context.Guild.GetUser(top[4].AuthorId).Username;
-                var value = ((double)top[0].Count / total) * 100;
-                var perone = Convert.ToInt32(Math.Round(value, 0));
-                value = ((double)top[1].Count / total) * 100;
-                var pertwo = Convert.ToInt32(Math.Round(value, 0));
-                value = ((double)top[2].Count / total) * 100;
-                var perthree = Convert.ToInt32(Math.Round(value, 0));
-                value = ((double)top[3].Count / total) * 100;
-                var perfour = Convert.ToInt32(Math.Round(value, 0));
-                value = ((double)top[4].Count / total) * 100;
-                var perfive = Convert.ToInt32(Math.Round(value, 0));
-                var em = new EmbedBuilder()
-                    .WithTitle("Daily ranking")
-                    .WithColor(Color.Gold)
-                    .WithThumbnailUrl("https://cdn.discordapp.com/attachments/812328100988977166/831968859488911410/trophy.png")
-                    .WithDescription($"**Today's top spammers are:**\n\n🥇 **{userone}** - **{top[0].Count}**({perone}% of total) messages\n🥈 **{usertwo}** - **{top[1].Count}**({pertwo}% of total) messages\n🥉 **{userthree}** - **{top[2].Count}**({perthree}% of total) messages\n<:medal4:831979903049007114> **{userfour}** - **{top[3].Count}**({perfour}% of total) messages\n<:medal5:831979917230735381> **{userfive}** - **{top[4].Count}**({perfive}% of total) messages\n\nTotal number of messages sent today - **{total}**")
-                    .WithFooter($"It took me {sw.Elapsed.TotalSeconds:F0}s to gather this data.");
-                await ReplyAsync(embed: em.Build());
+                await ReplyAsync("Daily Ranking module is not subscribed to any channel.");
+                return;
             }
-            catch (Exception)
+            var chnl = Context.Guild.TextChannels.SingleOrDefault(c => c.Id == config.ChannelId);
+            if (chnl == null)
             {
-
-                throw;
+                await ReplyAsync("The channel provided in the Daily Ranking configuration is not existing.");
+                return;
             }
-            //var a = await Context.Channel.GetMessagesAsync(last, Direction.Before, 100).FlattenAsync();
+            await ReplyAsync($"Daily Ranking module is subscribed to {chnl.Mention} channel. A message with daily statistics will be sent to this channel everyday 5 minutes before midnight(UTC+0).");
         }
     }
 

@@ -36,7 +36,7 @@ namespace OWuffel.Modules.Commands.Suggestions
                 return;
             }
 
-            await _db.SetSettingsValueAsync(Context.Guild.Id, "suggestionChannel", channel.Id);
+            await _db.SetSettingsValueAsync(Context.Guild, "suggestionChannel", channel.Id);
             var em = new EmbedBuilder()
                 .WithTitle("Suggestion channel configuration")
                 .WithColor(Color.Green)

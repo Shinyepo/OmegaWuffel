@@ -34,9 +34,9 @@ namespace OWuffel.Events
 
                     var beforeVch = previousstate.VoiceChannel;
                     var afterVch = newstate.VoiceChannel;
+                    var guildtodb = usr.Guild as SocketGuild;
 
-
-                    var Settings = await _db.GetGuildSettingsAsync(usr.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(guildtodb);
                     if (Settings == null || Settings.logVoiceStateUpdated == 0) return;
                     if (Settings.logIgnoreVoiceStateUpdated != null)
                     {

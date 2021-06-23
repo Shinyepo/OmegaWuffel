@@ -41,7 +41,7 @@ namespace OWuffel.Modules.Commands.AdminCommands
             {
                 await ReplyAsync("Prefix cannot contain numbers");
             }
-            var taskresult = await _db.SetSettingsValueAsync(Context.Guild.Id, "botPrefix", newprefix);
+            var taskresult = await _db.SetSettingsValueAsync(Context.Guild, "botPrefix", newprefix);
             if (taskresult.IsCompleted)
             {
                 var em = new EmbedBuilder()
@@ -91,7 +91,6 @@ namespace OWuffel.Modules.Commands.AdminCommands
                 {
                     em.AddField("Nickname: ", user.Nickname == null ? "*not set*" : user.Nickname, true);
                 }
-
                 em.AddField("Username: ", user.Username, true)
                 .AddField("Discriminator: ", "#" + user.Discriminator, true)
                 .AddField("Joined: ", user.JoinedAt.Value.ToLocalTime().ToString("dd/MM/yyyy"), true)

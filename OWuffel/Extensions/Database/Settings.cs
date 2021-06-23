@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace OWuffel.Extensions.Database
 {
@@ -9,8 +10,10 @@ namespace OWuffel.Extensions.Database
         public int id { get; set; }
 
         public ulong guild_id { get; set; }
+        public string guild_name { get; set; }
+        public string guild_icon_hash { get; set; }
 
-        public int botActive { get; set; }
+        public bool botActive { get; set; }
         public string botPrefix { get; set; }
         public ulong botModRole { get; set; }
         public ulong botAdminRole { get; set; }

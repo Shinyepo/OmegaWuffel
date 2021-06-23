@@ -65,6 +65,7 @@ namespace OWuffel.Modules.BDO
             ClassIcon.Add("Hashashin", "https://cdn.discordapp.com/attachments/750774776188108941/817483667378274344/AYDj4Bx.png");
             ClassIcon.Add("Nova", "https://cdn.discordapp.com/attachments/750774776188108941/817483714094170172/GZUjWIP.png");
             ClassIcon.Add("Sage", "https://cdn.discordapp.com/attachments/812328100988977166/822220102493274162/sage.png");
+            ClassIcon.Add("Corsair", "https://cdn.discordapp.com/attachments/812328100988977166/857366915261136957/oeDzRyl.png");
         }
 
         [Command("familyname", RunMode = RunMode.Async)]
@@ -73,8 +74,6 @@ namespace OWuffel.Modules.BDO
         {
             try
             {
-
-
                 var urlAddress = $"https://www.naeu.playblackdesert.com/en-US/Adventure?region=EU&searchType=2&searchKeyword={name}";
                 if (region != null)
                 {
@@ -215,6 +214,7 @@ namespace OWuffel.Modules.BDO
 
 
                         }
+
                         var pages = new PageBuilder[countreal];
                         var descrip = "";
                         if (guildname != "Private" && guildlink != "javascript:void(0)")

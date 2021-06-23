@@ -29,7 +29,7 @@ namespace OWuffel.events
             if (message.Author.IsBot) return;
 
             var guild = GetThings.getGuildFromChannel(channel);
-            var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+            var Settings = await _db.GetGuildSettingsAsync(guild);
             if (Settings.logMessageUpdated == 0) return;
             if (Settings.logIgnoreMessageUpdated != null)
             {
@@ -66,7 +66,7 @@ namespace OWuffel.events
             if (message.Author.IsBot) return;
 
             var guild = GetThings.getGuildFromChannel(channel);
-            var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+            var Settings = await _db.GetGuildSettingsAsync(guild);
             if (Settings.logMessageDeleted == 0) return;
             if (Settings.logIgnoreMessageDeleted != null)
             {
@@ -97,7 +97,7 @@ namespace OWuffel.events
         public async Task MessageBulkDelete(IReadOnlyCollection<Cacheable<IMessage, ulong>> arg1, ISocketMessageChannel arg2)
         {
             var guild = GetThings.getGuildFromChannel(arg2);
-            var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+            var Settings = await _db.GetGuildSettingsAsync(guild);
             if (Settings.logMessageDeleted == 0) return;
             Console.WriteLine("Event start");
             Console.WriteLine(arg1.Count.ToString());

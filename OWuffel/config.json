@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=DESKTOP-RAQKEQT\\MSSQLSERVER01;Database=WuffelDB;Trusted_Connection=True;MultipleActiveResultSets=True",
+    "DefaultConnection": "Server=192.168.1.14;Port=5454;Database=OWuffel;User Id=OWuffelDashboard;Password=p@Zaj0swUbr;",
     "SQLiteConnectionString": "Data Source=Extensions\\Database\\Wuffel.db;Trusted_Connection=True;MultipleActiveResultSets=true"
   },
 
@@ -13,8 +13,8 @@
 
   "ProcessConfig": {
     "Windows": {
-      "FileName": "OWuffel.exe",
-      "Arguments": "{0} {1}"
+      "Arguments": "{0} {1}",
+      "FileName": "OWuffel.exe"
     },
     "Linux": {
       "FileName": "OWuffel",

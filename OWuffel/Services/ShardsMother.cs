@@ -74,7 +74,7 @@ namespace OWuffel.Services
             var OutputTemplate = "Shard #-1: [{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 
             Serilog.Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Debug()
                 .WriteTo.Console(outputTemplate: OutputTemplate, theme: AnsiConsoleTheme.Literate)
                 .WriteTo.File(path, rollingInterval: RollingInterval.Day, outputTemplate: OutputTemplate)
                 .CreateLogger();

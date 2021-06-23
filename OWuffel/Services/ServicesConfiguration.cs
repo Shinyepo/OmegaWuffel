@@ -9,6 +9,12 @@ using Victoria.EventArgs;
 using OWuffel.events;
 using OWuffel.Services.Config;
 using OWuffel.Events;
+using System.Threading;
+using OWuffel.Util;
+using OWuffel.Modules.Commands;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
 
 namespace OWuffel.Services
 {
@@ -27,6 +33,10 @@ namespace OWuffel.Services
         private readonly UserEvents _userevents;
         private readonly ReactionEvents _reactionevets;
 
+        private Timer timer;
+        private DatabaseUtilities _db;
+        private DiscordSocketClient _client;
+
         public ServicesConfiguration(IServiceProvider services)
         {
             // get the services we need via DI, and assign the fields declared above to them
@@ -39,6 +49,7 @@ namespace OWuffel.Services
             _voiceevents = services.GetService<VoiceChannelEvents>();
             _userevents = services.GetService<UserEvents>();
             _reactionevets = services.GetService<ReactionEvents>();
+            _db = services.GetRequiredService<DatabaseUtilities>();
             _services = services;
             _instanceOfLavaNode.OnTrackEnded += OnTrackEnded;
 
@@ -96,6 +107,10 @@ namespace OWuffel.Services
             _discord.ReactionsCleared += _reactionevets.ReactionCleared;
             _discord.ChannelUpdated += _guildevents.ChannelUpdated;
 
+            //Log.Info("Setting up ranking loop.");
+            //SetUpTimer(new TimeSpan(12, 06, 00));
+            //Log.Info("Finished setting up loop.");
+
             if (!_instanceOfLavaNode.IsConnected)
             {
                 await _instanceOfLavaNode.ConnectAsync();
@@ -143,7 +158,135 @@ namespace OWuffel.Services
             return Task.CompletedTask;
 
         }
+        private void SetUpTimer(TimeSpan alertTime)
+        {
+            DateTime current = DateTime.UtcNow;
+            TimeSpan timeToGo = alertTime - current.TimeOfDay;
+            if (timeToGo < TimeSpan.Zero)
+            {
+                return;//time already passed
+            }
+            this.timer = new Timer(x =>
+            {
+                this.SomeMethodRunsAt1600();
+            }, null, timeToGo, Timeout.InfiniteTimeSpan);
+        }
 
-        
+        private void SomeMethodRunsAt1600()
+        {
+            var _ = Task.Run(async () =>
+            {
+                try
+                {
+                    Log.Info("Started the daily message ranking loop.");
+                    var configlist = await _db.GetAllDailyRankingsConfigruations();
+
+                    foreach (var guild in _discord.Guilds)
+                    {
+                        var config = configlist.SingleOrDefault(g => g.GuildId == guild.Id);
+                        if (config != null)
+                        {
+                            var channels = guild.TextChannels.ToList();
+                            var done = false;
+                            var top = new List<UserRanking>();
+                            var currdate = DateTime.UtcNow.Day;
+                            var sw = Stopwatch.StartNew();
+                            ulong total = 0;
+                            while (!done)
+                            {
+                                foreach (var item in channels)
+                                {
+                                    var list = await item.GetMessagesAsync(100).FlattenAsync();
+                                    int count = list.Count();
+                                    if (count < 1) continue;
+                                    var fulllist = false;
+                                    IMessage lastmsg = list.Last();
+                                    while (!fulllist)
+                                    {
+                                        foreach (var msg in list)
+                                        {
+                                            lastmsg = msg;
+
+                                            if (msg.CreatedAt.Day == currdate)
+                                            {
+                                                total += 1;
+                                                if (msg.Author.IsBot) continue;
+                                                var isin = top.FirstOrDefault(e => e.AuthorId == msg.Author.Id);
+                                                if (isin != null)
+                                                {
+                                                    var entry = top.FirstOrDefault(e => e.AuthorId == msg.Author.Id);
+                                                    entry.Count += 1;
+                                                }
+                                                else
+                                                {
+                                                    var entry = new UserRanking();
+                                                    entry.AuthorId = msg.Author.Id;
+                                                    entry.Count = 1;
+                                                    top.Add(entry);
+                                                }
+                                            }
+                                            else if (msg.CreatedAt.Day != currdate)
+                                            {
+                                                fulllist = true;
+                                                break;
+                                            }
+
+                                        }
+                                        if (!fulllist)
+                                        {
+                                            list = await item.GetMessagesAsync(lastmsg, Direction.Before, 100).FlattenAsync();
+                                        }
+                                    }
+                                }
+                                done = true;
+                            }
+                            top.Sort(delegate (UserRanking x, UserRanking y)
+                            {
+                                if (x.Count == 0 && y.Count == 0) return 0;
+                                else if (x.Count == 0) return -1;
+                                else if (y.Count == 0) return 1;
+                                else return y.Count.CompareTo(x.Count);
+                            });
+                            sw.Stop();
+                            var a = "🥇";
+                            var b = "🥈";
+                            var c = "🥉";
+                            var d = "<:medal4:831979903049007114>";
+                            var e = "<:medal5:831979917230735381>";
+                            var emoji = new List<string> { a, b, c, d, e };
+                            var em = new EmbedBuilder()
+                               .WithTitle("Daily ranking")
+                               .WithColor(Color.Gold)
+                               .WithThumbnailUrl("https://cdn.discordapp.com/attachments/812328100988977166/831968859488911410/trophy.png")
+                               .WithDescription($"**Today's top spammers are:**\n\n")
+                               .WithFooter($"It took me {sw.Elapsed.TotalSeconds:F0}s to gather this data.");
+                            for (int i = 0; i < top.Count; i++)
+                            {
+                                if (i == 5) break;
+                                var user = guild.GetUser(top[i].AuthorId).Username;
+                                var value = ((double)top[i].Count / total) * 100;
+                                var percent = Convert.ToInt32(Math.Round(value, 0));
+                                em.Description += emoji[i] + $" **{user}** - **{top[i].Count}**({percent}% of total) messages\n";
+
+                            }
+                            em.Description += $"\nTotal number of messages sent today - **{total}**";
+                            await guild.GetTextChannel(config.ChannelId).SendMessageAsync(embed: em.Build());
+
+
+                        }
+                    }
+                    SetUpTimer(new TimeSpan(12, 08, 00));
+                    Log.Info("Finished daily message ranking loop.");
+
+                }
+                catch (Exception er)
+                {
+                    Log.Error(er);
+                }
+            });
+
+        }
+
+
     }
 }

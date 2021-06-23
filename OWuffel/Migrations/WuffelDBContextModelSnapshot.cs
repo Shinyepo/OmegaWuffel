@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OWuffel.Extensions.Database;
 
 namespace OWuffel.Migrations
@@ -13,40 +14,43 @@ namespace OWuffel.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.5")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("OWuffel.Extensions.Database.ChannelCheckModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<ulong>("AuthorId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("AuthorId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("ChannelId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ChannelId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("Channels")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Found")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("GuildId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("MessageId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("MessageId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Target")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -57,16 +61,17 @@ namespace OWuffel.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<ulong>("ChannelId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ChannelId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("GuildId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("IgnoreId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -77,124 +82,131 @@ namespace OWuffel.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("botActive")
-                        .HasColumnType("INTEGER");
+                    b.Property<bool>("botActive")
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("botAdminRole")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("botAdminRole")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<bool>("botClearMessage")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("botClearMessagesForBot")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("botDisabledCommands")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("botLanguage")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("botModRole")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("botModRole")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("botMuteRole")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("botMuteRole")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("botPrefix")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("botSystemNotice")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("guild_id")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("guild_icon_hash")
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("logChannelCreated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("guild_id")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logChannelDeleted")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("guild_name")
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("logChannelUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logChannelCreated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logEmoteCreated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logChannelDeleted")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logEmoteDeleted")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logChannelUpdated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logEmoteUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logEmoteCreated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logGuildUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logEmoteDeleted")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<decimal>("logEmoteUpdated")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<decimal>("logGuildUpdated")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("logIgnoreMessageDeleted")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("logIgnoreMessageUpdated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("logIgnoreVoiceStateUpdated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("logMessageDeleted")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logMessageDeleted")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logMessageUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logMessageUpdated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logRoleCreated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logRoleCreated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logRoleDeleted")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logRoleDeleted")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logRoleUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logRoleUpdated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logUserBanned")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logUserBanned")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logUserJoined")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logUserJoined")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logUserLeft")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logUserLeft")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logUserUnbanned")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logUserUnbanned")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logUserUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logUserUpdated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("logVoiceStateUpdated")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("logVoiceStateUpdated")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("reactServerChannel")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("reactServerChannel")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("reactServerMessage")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("reactServerMessage")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("reactServerParent")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("reactServerParent")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("suggestionChannel")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("suggestionChannel")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("suggestionLogChannel")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("suggestionLogChannel")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("welcomeChannel")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("welcomeChannel")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<bool>("welcomeMessageAutoDelete")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.HasKey("id");
 
@@ -208,46 +220,47 @@ namespace OWuffel.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Author")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("AuthorId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("AuthorId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("ChannelId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ChannelId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Content")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("GuildId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("MessageId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("MessageId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("Moderator")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("ModeratorId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ModeratorId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("VoteDislike")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("VoteLike")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -258,31 +271,32 @@ namespace OWuffel.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<ulong>("ActiveTicketsId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ActiveTicketsId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("GuildId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("MessageId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("MessageId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("Notify")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("ParentId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ParentId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("PremiumStatus")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("TicketInfoId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("TicketInfoId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("TicketMessage")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -293,31 +307,32 @@ namespace OWuffel.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<ulong>("ChannelId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ChannelId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("GuildId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("GuildId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("ModeratorId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("ModeratorId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("UserId")
+                        .HasColumnType("numeric(20,0)");
 
-                    b.Property<ulong>("WhoClosedTicket")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("WhoClosedTicket")
+                        .HasColumnType("numeric(20,0)");
 
                     b.HasKey("Id");
 

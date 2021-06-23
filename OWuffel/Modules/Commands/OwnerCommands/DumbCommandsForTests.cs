@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Interactivity;
+using Interactivity.Pagination;
 using Newtonsoft.Json.Linq;
 using OWuffel.Models;
 using OWuffel.Services;
@@ -18,6 +20,11 @@ namespace OWuffel.Modules.Commands.OwnerCommands
     [RequireOwner]
     public class DumbCommandsForTests : ModuleBase<Cipska>
     {
+        public InteractivityService intserv { get; set; }
+        public DumbCommandsForTests(InteractivityService serv)
+        {
+            intserv = serv;
+        }
         [Command("d")]
         public async Task d()
         {
@@ -103,10 +110,85 @@ namespace OWuffel.Modules.Commands.OwnerCommands
             await ReplyAsync(s);
 
         }
-        [Command("currdate")]
-        public async Task currDateAsync()
+        [Command("tet")]
+        public async Task tet()
         {
-            await ReplyAsync($"Date " + DateTime.Now + "\nUTC+0? " + DateTime.UtcNow);
+            var ser = Context.User as SocketGuildUser;
+            
+
+            var role = Context.Guild.Roles.FirstOrDefault(c => c.Name == "cipa");
+            var rolesy = new List<SocketRole>();
+            rolesy.Add(role);
+            var user = Context.User as SocketGuildUser;
+            await user.AddRolesAsync(rolesy);
+            
+        }
+        [Command("b")]
+        public async Task currDateAsync(int provided)
+        {
+            var a = 104320577;
+
+            var permissions = 0x40;
+            var d = (provided & 0x8) == 0x8;
+            
+            await ReplyAsync(d.ToString());
+        }
+        [Command("order66")]
+        public async Task ExecuteOrder()
+        {
+            var userlist = Context.Guild.Users.ToList();
+            foreach (var item in userlist)
+            {
+                if (item.Nickname != null && item.GuildPermissions.Administrator == false)
+                {
+
+                    Console.WriteLine("zaczete");
+
+                    await item.ModifyAsync(u => { u.Nickname = null; });
+                    Console.WriteLine("skonczone");
+                    Task.Delay(1000);
+                }
+                
+            }
+        }
+        [Command("jc", RunMode = RunMode.Async)]
+        public async Task JakasCipa()
+        {
+            var lista = new List<int>();
+            //Zignoruj tego fora, jest tylko po  to zeby wypelnic liste wartosciami
+            for (int a = 0; a < 20; a++)
+            {
+                lista.Add(a);
+            }
+            //
+            var PageLimit = 20;
+            var numberOfPages = Math.Ceiling((double)lista.Count() / PageLimit); //55 / 20 = 2.75, Ceiling = zaokraglone do gory = 3;
+            var toembed = "";
+            var paginator = new PageBuilder[(int)numberOfPages];
+            int pageIndex = 0;
+            for (int i = 0; i < lista.Count(); i++)
+            {
+                if (i % 20 == 0 && i != 0)
+                {
+                    paginator[pageIndex] = new PageBuilder().WithDescription(toembed)
+                                .WithColor(Color.Blue);
+                    pageIndex++;
+                    toembed = "";
+                }
+                else
+                {
+                    toembed += lista[i] + "\n";
+                }
+            }
+            if (toembed != "") paginator[pageIndex] = new PageBuilder().WithDescription(toembed)
+                                .WithColor(Color.Blue);
+            var embedToSend = new StaticPaginatorBuilder()
+                .WithPages(paginator)
+                .WithFooter(PaginatorFooter.PageNumber)
+                .WithDefaultEmotes()
+                .Build();
+
+            await intserv.SendPaginatorAsync(embedToSend, Context.Channel);
         }
     }
 }

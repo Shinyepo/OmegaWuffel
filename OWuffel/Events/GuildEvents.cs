@@ -26,15 +26,15 @@ namespace OWuffel.events
         public async Task JoinedGuild(SocketGuild arg)
         {
 
-            var Settings = await _db.GetGuildSettingsAsync(arg.Id);
+            var Settings = await _db.GetGuildSettingsAsync(arg);
             if (Settings == null)
             {
-                await _db.SetDefaultSettingsAsync(arg.Id);
+                await _db.SetDefaultSettingsAsync(arg);
                 Log.Info($"Joined {arg.Name}({arg.Id}) with {arg.MemberCount} users total.");
             }
             else
             {
-                Settings.botActive = 1;
+                Settings.botActive = true;
                 await _debe.SaveChangesAsync();
                 Log.Info($"Joined {arg.Name}({arg.Id}) with {arg.MemberCount} users total.");
             }
@@ -42,10 +42,10 @@ namespace OWuffel.events
 
         public async Task LeftGuild(SocketGuild arg)
         {
-            var Settings = await _db.GetGuildSettingsAsync(arg.Id);
+            var Settings = await _db.GetGuildSettingsAsync(arg);
             if (Settings != null)
             {
-                Settings.botActive = 0;
+                Settings.botActive = false;
                 await _debe.SaveChangesAsync();
                 Log.Info($"Left {arg.Name}({arg.Id}) with {arg.MemberCount} users total.");
             }
@@ -61,7 +61,7 @@ namespace OWuffel.events
             {
                 try
                 {
-                    var settings = await _db.GetGuildSettingsAsync(guild2.Id);
+                    var settings = await _db.GetGuildSettingsAsync(guild2);
 
                     if (guild1.IconUrl != guild2.IconUrl)
                     {
@@ -170,7 +170,7 @@ namespace OWuffel.events
                     var chnl1 = channel1 as SocketGuildChannel;
                     var chnl2 = channel2 as SocketGuildChannel;
                     var guild = chnl1.Guild;
-                    var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(guild);
                     if (Settings.logChannelUpdated == 0) return;
                     ITextChannel channel = guild.GetTextChannel(Settings.logChannelUpdated);
 
@@ -260,7 +260,7 @@ namespace OWuffel.events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(role.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(role.Guild);
                     if (Settings.logRoleCreated == 0) return;
                     ITextChannel channel = role.Guild.GetTextChannel(Settings.logRoleCreated);
 
@@ -289,7 +289,7 @@ namespace OWuffel.events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(role2.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(role2.Guild);
                     if (Settings.logRoleUpdated == 0) return;
                     ITextChannel channel = role2.Guild.GetTextChannel(Settings.logRoleUpdated);
 
@@ -363,7 +363,7 @@ namespace OWuffel.events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(role.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(role.Guild);
                     if (Settings.logRoleDeleted == 0) return;
                     ITextChannel channel = role.Guild.GetTextChannel(Settings.logRoleDeleted);
 

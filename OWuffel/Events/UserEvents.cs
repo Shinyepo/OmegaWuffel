@@ -82,7 +82,7 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(user.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(user.Guild);
                     if (Settings == null || Settings.logUserJoined == 0) return;
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"✅ User joined.")
@@ -113,7 +113,7 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(user.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(user.Guild);
                     if (Settings == null || Settings.logUserLeft == 0) return;
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"❌ User left.")
@@ -143,7 +143,7 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(guild);
                     if (Settings == null || Settings.logUserUnbanned == 0) return;
 
                     ITextChannel channel = guild.GetTextChannel(Settings.logUserUnbanned);
@@ -172,7 +172,7 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(guild);
                     if (Settings == null || Settings.logUserBanned == 0) return;
 
                     ITextChannel channel = guild.GetTextChannel(Settings.logUserBanned);
@@ -209,7 +209,7 @@ namespace OWuffel.Events
                     foreach (var guild in after.MutualGuilds)
                     {
 
-                        var Settings = await _db.GetGuildSettingsAsync(guild.Id);
+                        var Settings = await _db.GetGuildSettingsAsync(guild);
                         if (Settings == null || Settings.logUserUpdated == 0) continue;
 
                         ITextChannel channel = guild.GetTextChannel(Settings.logUserUpdated);
@@ -263,7 +263,7 @@ namespace OWuffel.Events
                     if (before.Status != after.Status) return;
                     if (before.IsBot) return;
                     if (!(after is SocketGuildUser)) return;
-                    var Settings = await _db.GetGuildSettingsAsync(after.Guild.Id);
+                    var Settings = await _db.GetGuildSettingsAsync(after.Guild);
                     if (Settings == null || Settings.logUserUpdated == 0) return;
 
                     ITextChannel channel = after.Guild.GetTextChannel(Settings.logUserUpdated);

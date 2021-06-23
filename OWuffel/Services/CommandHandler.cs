@@ -59,12 +59,12 @@ namespace OWuffel.Services
 
             // get prefix from the configuration file
             var guildchannel = message.Channel as SocketGuildChannel;
-            var settings = await _db.GetGuildSettingsAsync(guildchannel.Guild.Id);
+            var settings = await _db.GetGuildSettingsAsync(guildchannel.Guild);
             Prefix = settings.botPrefix;
             if (Prefix == null)
             {
-                await _db.SetSettingsValueAsync(guildchannel.Guild.Id, "botPrefix", "+");
-                settings = await _db.GetGuildSettingsAsync(guildchannel.Guild.Id);
+                await _db.SetSettingsValueAsync(guildchannel.Guild, "botPrefix", "+");
+                settings = await _db.GetGuildSettingsAsync(guildchannel.Guild);
                 Prefix = settings.botPrefix;
             }
             if (message.Content.Contains(_client.CurrentUser.Id.ToString()))
