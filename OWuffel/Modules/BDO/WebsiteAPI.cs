@@ -143,15 +143,7 @@ namespace OWuffel.Modules.BDO
                         var characterlist = profiledata.Split("<ul class=\"character_list\">")[1].Split("</article>")[0];
                         var count = characterlist.Split("<li>");
                         bool countcheck = false;
-                        if (count.Count() > 22)
-                        {
-                            countcheck = count[2].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
-
-                        }
-                        else
-                        {
-                            countcheck = count[1].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
-                        }
+                        countcheck = count[2].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
                         var countreal = 0;
                         var priv = false;
                         if (countcheck)
@@ -387,15 +379,7 @@ namespace OWuffel.Modules.BDO
                         var characterlist = profiledata.Split("<ul class=\"character_list\">")[1].Split("</article>")[0];
                         var count = characterlist.Split("<li>");
                         bool countcheck = false;
-                        if (count.Count() > 30)
-                        {
-                            countcheck = count[2].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
-
-                        }
-                        else
-                        {
-                            countcheck = count[1].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
-                        }
+                        countcheck = count[2].Split("<span class=\"spec_level\">")[1].Split("</em>")[0].Contains("Private");
                         var countreal = 0;
                         var priv = false;
                         if (countcheck)
@@ -405,7 +389,7 @@ namespace OWuffel.Modules.BDO
                         }
                         else
                         {
-                            countreal = ((count.Count() - 1) / 11) - 1;
+                            countreal = ((count.Count() - 12) - 1) / 12 + 1;
                         }
                         var Characters = new List<Characters>();
                         string[] splitchar = null;
@@ -458,7 +442,6 @@ namespace OWuffel.Modules.BDO
 
 
                         }
-                        Console.WriteLine(Characters.Count);
                         var pages = new PageBuilder[countreal];
                         var descrip = "";
                         if (guildname != "Private" && guildlink != "javascript:void(0)")
