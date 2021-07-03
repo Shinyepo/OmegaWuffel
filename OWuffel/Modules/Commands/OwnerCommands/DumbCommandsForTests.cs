@@ -125,7 +125,7 @@ namespace OWuffel.Modules.Commands.OwnerCommands
         }
         [Command("b")]
         public async Task currDateAsync(int provided)
-        {
+        {            
             var a = 104320577;
 
             var permissions = 0x40;

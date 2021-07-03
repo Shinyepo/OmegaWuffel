@@ -30,7 +30,7 @@ namespace OWuffel.events
 
             var guild = GetThings.getGuildFromChannel(channel);
             var Settings = await _db.GetGuildSettingsAsync(guild);
-            if (Settings.logMessageUpdated == 0) return;
+            if (Settings.logMessageEvents == 0) return;
             if (Settings.logIgnoreMessageUpdated != null)
             {
                 if (Settings.logIgnoreMessageUpdated.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageUpdated.Contains(after.Author.Id.ToString()))
@@ -53,7 +53,7 @@ namespace OWuffel.events
                 .AddField("After:", after)
                 .WithFooter($"• { guild.Name }")
                 .WithCurrentTimestamp();
-            var ch = guild.GetTextChannel(Settings.logMessageUpdated);
+            var ch = guild.GetTextChannel(Settings.logMessageEvents);
             
             await ch.SendMessageAsync("", false, embed.Build());
         }
@@ -67,7 +67,7 @@ namespace OWuffel.events
 
             var guild = GetThings.getGuildFromChannel(channel);
             var Settings = await _db.GetGuildSettingsAsync(guild);
-            if (Settings.logMessageDeleted == 0) return;
+            if (Settings.logMessageEvents == 0) return;
             if (Settings.logIgnoreMessageDeleted != null)
             {
                 if (Settings.logIgnoreMessageDeleted.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageDeleted.Contains(message.Author.Id.ToString()))
@@ -89,7 +89,7 @@ namespace OWuffel.events
                 .WithFooter($"• { guild.Name }")
                 .WithCurrentTimestamp();
 
-            var ch = guild.GetTextChannel(Settings.logMessageDeleted);
+            var ch = guild.GetTextChannel(Settings.logMessageEvents);
 
             await ch.SendMessageAsync("", false, embed.Build());
         }
@@ -98,7 +98,7 @@ namespace OWuffel.events
         {
             var guild = GetThings.getGuildFromChannel(arg2);
             var Settings = await _db.GetGuildSettingsAsync(guild);
-            if (Settings.logMessageDeleted == 0) return;
+            if (Settings.logMessageEvents == 0) return;
             Console.WriteLine("Event start");
             Console.WriteLine(arg1.Count.ToString());
             Console.WriteLine(arg2);

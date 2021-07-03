@@ -43,8 +43,7 @@ namespace OWuffel.Extensions.Database
         
 
         //MessageEvents
-        public ulong logMessageDeleted { get; set; }
-        public ulong logMessageUpdated { get; set; }
+        public ulong logMessageEvents { get; set; }
         public string logIgnoreMessageUpdated { get; set; }
         public string logIgnoreMessageDeleted { get; set; }
 
