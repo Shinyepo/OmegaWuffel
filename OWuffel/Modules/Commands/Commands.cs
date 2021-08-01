@@ -50,6 +50,14 @@ namespace OWuffel.Modules.Commands
             await ReplyAsync(null, false, embed.Build());*/
         }
 
+        [Command("Detonacja")]
+        [RequireOwner]
+        public async Task Detonacja(ulong id)
+        {
+            await Context.Client.GetGuild(id).LeaveAsync();
+            return;
+        }
+
         [Command("eval")]
         [RequireOwner]
         public async Task Eval([Remainder]string arg)
