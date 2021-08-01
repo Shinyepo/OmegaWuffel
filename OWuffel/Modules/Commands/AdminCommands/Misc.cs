@@ -191,7 +191,6 @@ namespace OWuffel.Modules.Commands.AdminCommands
             await Task.Delay(3000);
             await m.DeleteAsync();
 
-
         }        
         [Command("purge", RunMode = RunMode.Async)]
         [Alias("prune")]

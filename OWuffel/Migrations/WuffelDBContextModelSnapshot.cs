@@ -124,65 +124,53 @@ namespace OWuffel.Migrations
                     b.Property<string>("guild_name")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("logChannelCreated")
+                    b.Property<decimal>("logChannelEvents")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<decimal>("logChannelDeleted")
+                    b.Property<bool>("logChannelPowerSwitch")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("logEmoteEvents")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<decimal>("logChannelUpdated")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logEmoteCreated")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logEmoteDeleted")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logEmoteUpdated")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<bool>("logEmotePowerSwitch")
+                        .HasColumnType("boolean");
 
                     b.Property<decimal>("logGuildUpdated")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<string>("logIgnoreMessageDeleted")
-                        .HasColumnType("text");
-
-                    b.Property<string>("logIgnoreMessageUpdated")
+                    b.Property<string>("logIgnoreMessageEvents")
                         .HasColumnType("text");
 
                     b.Property<string>("logIgnoreVoiceStateUpdated")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("logMessageDeleted")
+                    b.Property<decimal>("logMessageEvents")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<decimal>("logMessageUpdated")
+                    b.Property<bool>("logMessageEventsPowerSwitch")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("logRoleEvents")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<decimal>("logRoleCreated")
+                    b.Property<bool>("logRolePowerSwtich")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("logUserMovement")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<decimal>("logRoleDeleted")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logRoleUpdated")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logUserBanned")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logUserJoined")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logUserLeft")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<decimal>("logUserUnbanned")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<bool>("logUserMovementPowerSwitch")
+                        .HasColumnType("boolean");
 
                     b.Property<decimal>("logUserUpdated")
                         .HasColumnType("numeric(20,0)");
+
+                    b.Property<bool>("logUserUpdatedPowerSwitch")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("logVoicePresencePowerSwitch")
+                        .HasColumnType("boolean");
 
                     b.Property<decimal>("logVoiceStateUpdated")
                         .HasColumnType("numeric(20,0)");

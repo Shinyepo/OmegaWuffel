@@ -33,8 +33,8 @@ namespace OWuffel.Modules.Commands.Events
         public async Task IgnoreList()
         {
             var ignoreVoice = Context.Settings.logIgnoreVoiceStateUpdated;
-            var ignoreUpdate = Context.Settings.logIgnoreMessageUpdated;
-            var ignoreDelete = Context.Settings.logIgnoreMessageDeleted;
+            var ignoreUpdate = Context.Settings.logIgnoreMessageEvents;
+            var ignoreDelete = Context.Settings.logIgnoreMessageEvents;
 
             var deleteList = "";
             var updateList = "";
@@ -255,7 +255,7 @@ namespace OWuffel.Modules.Commands.Events
                         await ReplyAsync(embed: em.Build());
                         return;
                     }
-                    var fromcontext = Context.Settings.logIgnoreMessageUpdated == null ? "" : Context.Settings.logIgnoreMessageUpdated;
+                    var fromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoredupdate = fromcontext == "" ? new List<string>() : fromcontext.Split(",").ToList();
                     int removed = 0;
                     var cantremove = new List<string>();
@@ -317,7 +317,7 @@ namespace OWuffel.Modules.Commands.Events
                         await ReplyAsync(embed: em.Build());
                         return;
                     }
-                    var fromcontext = Context.Settings.logIgnoreMessageDeleted == null ? "" : Context.Settings.logIgnoreMessageDeleted;
+                    var fromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoreddelete = fromcontext == "" ? new List<string>() : fromcontext.Split(",").ToList();
                     int removed = 0;
                     var cantremove = new List<string>();
@@ -380,7 +380,7 @@ namespace OWuffel.Modules.Commands.Events
                         await ReplyAsync(embed: em.Build());
                         return;
                     }
-                    var fromcontext = Context.Settings.logIgnoreMessageDeleted == null ? "" : Context.Settings.logIgnoreMessageDeleted;
+                    var fromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoreddelete = fromcontext == "" ? new List<string>() : fromcontext.Split(",").ToList();
                     int removed = 0;
                     foreach (var item in toignore)
@@ -393,7 +393,7 @@ namespace OWuffel.Modules.Commands.Events
                     }
                     var todbdelete = String.Join(",", ignoreddelete);
 
-                    var fromcontextupdated = Context.Settings.logIgnoreMessageUpdated == null ? "" : Context.Settings.logIgnoreMessageUpdated;
+                    var fromcontextupdated = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoredupdate = fromcontextupdated == "" ? new List<string>() : fromcontextupdated.Split(",").ToList();
                     foreach (var item in toignore)
                     {
@@ -553,7 +553,7 @@ namespace OWuffel.Modules.Commands.Events
                 }
                 else if (log.ToLower() == "messageupdated")
                 {
-                    var fromcontext = Context.Settings.logIgnoreMessageUpdated == null ? "" : Context.Settings.logIgnoreMessageUpdated;
+                    var fromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoredmessageupdate = fromcontext == "" ? new List<string>() : fromcontext.Split(",").ToList();
                     int added = 0;
                     var duplicates = new List<string>();
@@ -607,7 +607,7 @@ namespace OWuffel.Modules.Commands.Events
                 }
                 else if (log.ToLower() == "messagedeleted")
                 {
-                    var fromcontext = Context.Settings.logIgnoreMessageDeleted == null ? "" : Context.Settings.logIgnoreMessageDeleted;
+                    var fromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoredmessagedeleted = fromcontext == "" ? new List<string>() : fromcontext.Split(",").ToList();
                     int added = 0;
                     var duplicates = new List<string>();
@@ -661,7 +661,7 @@ namespace OWuffel.Modules.Commands.Events
                 }
                 else if (log.ToLower() == "messageevents")
                 {
-                    var deletefromcontext = Context.Settings.logIgnoreMessageDeleted == null ? "" : Context.Settings.logIgnoreMessageDeleted;
+                    var deletefromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoredmessagedeleted = deletefromcontext == "" ? new List<string>() : deletefromcontext.Split(",").ToList();
                     int added = 0;
                     var duplicates = new List<string>();
@@ -692,7 +692,7 @@ namespace OWuffel.Modules.Commands.Events
                     }
                     var todbdelete = String.Join(",", ignoredmessagedeleted);
 
-                    var updatefromcontext = Context.Settings.logIgnoreMessageUpdated == null ? "" : Context.Settings.logIgnoreMessageUpdated;
+                    var updatefromcontext = Context.Settings.logIgnoreMessageEvents == null ? "" : Context.Settings.logIgnoreMessageEvents;
                     var ignoredmessageupdate = updatefromcontext == "" ? new List<string>() : updatefromcontext.Split(",").ToList();
                     foreach (var item in toignore)
                     {

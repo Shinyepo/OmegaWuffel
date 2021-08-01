@@ -31,9 +31,9 @@ namespace OWuffel.events
             var guild = GetThings.getGuildFromChannel(channel);
             var Settings = await _db.GetGuildSettingsAsync(guild);
             if (Settings.logMessageEvents == 0) return;
-            if (Settings.logIgnoreMessageUpdated != null)
+            if (Settings.logIgnoreMessageEvents != null)
             {
-                if (Settings.logIgnoreMessageUpdated.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageUpdated.Contains(after.Author.Id.ToString()))
+                if (Settings.logIgnoreMessageEvents.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageEvents.Contains(after.Author.Id.ToString()))
                 {
                     return;
                 }
@@ -68,9 +68,9 @@ namespace OWuffel.events
             var guild = GetThings.getGuildFromChannel(channel);
             var Settings = await _db.GetGuildSettingsAsync(guild);
             if (Settings.logMessageEvents == 0) return;
-            if (Settings.logIgnoreMessageDeleted != null)
+            if (Settings.logIgnoreMessageEvents != null)
             {
-                if (Settings.logIgnoreMessageDeleted.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageDeleted.Contains(message.Author.Id.ToString()))
+                if (Settings.logIgnoreMessageEvents.Contains(channel.Id.ToString()) || Settings.logIgnoreMessageEvents.Contains(message.Author.Id.ToString()))
                 {
                     return;
                 }

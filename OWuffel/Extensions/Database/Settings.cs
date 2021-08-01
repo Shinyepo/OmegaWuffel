@@ -29,35 +29,31 @@ namespace OWuffel.Extensions.Database
         public bool welcomeMessageAutoDelete { get; set; }
 
         //UserVoiceStateUpdated
+        public bool logVoicePresencePowerSwitch { get; set; }
         public ulong logVoiceStateUpdated { get; set; }
         public string logIgnoreVoiceStateUpdated { get; set; }
 
         //UserEvents
-        public ulong logUserJoined { get; set; }
-        public ulong logUserLeft { get; set; }
-        public ulong logUserBanned { get; set; }
-        public ulong logUserUnbanned { get; set; }
+        public bool logUserMovementPowerSwitch { get; set; }
+        public ulong logUserMovement { get; set; }
+        public bool logUserUpdatedPowerSwitch { get; set; }
         public ulong logUserUpdated { get; set; }
 
         //RoleEvents
-        
+        public bool logRolePowerSwtich { get; set; }
+        public ulong logRoleEvents { get; set; }
 
         //MessageEvents
+        public bool logMessageEventsPowerSwitch { get; set; }
         public ulong logMessageEvents { get; set; }
-        public string logIgnoreMessageUpdated { get; set; }
-        public string logIgnoreMessageDeleted { get; set; }
+        public string logIgnoreMessageEvents { get; set; }
 
-        //GuildEvents
-        public ulong logEmoteCreated { get; set; }
-        public ulong logEmoteUpdated { get; set; }
-        public ulong logEmoteDeleted { get; set; }
-        public ulong logRoleCreated { get; set; }
-        public ulong logRoleUpdated { get; set; }
-        public ulong logRoleDeleted { get; set; }
+        public bool logEmotePowerSwitch { get; set; }
+        public ulong logEmoteEvents { get; set; }
+
         public ulong logGuildUpdated { get; set; }
-        public ulong logChannelUpdated { get; set; }
-        public ulong logChannelCreated { get; set; }
-        public ulong logChannelDeleted { get; set; }
+        public bool logChannelPowerSwitch { get; set; }
+        public ulong logChannelEvents { get; set; }
 
 
         //Suggestionconfig

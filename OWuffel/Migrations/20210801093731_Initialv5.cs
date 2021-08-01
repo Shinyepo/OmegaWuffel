@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace OWuffel.Migrations
 {
-    public partial class PostgresInitial : Migration
+    public partial class Initialv5 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -50,7 +50,9 @@ namespace OWuffel.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     guild_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    botActive = table.Column<int>(type: "integer", nullable: false),
+                    guild_name = table.Column<string>(type: "text", nullable: true),
+                    guild_icon_hash = table.Column<string>(type: "text", nullable: true),
+                    botActive = table.Column<bool>(type: "boolean", nullable: false),
                     botPrefix = table.Column<string>(type: "text", nullable: true),
                     botModRole = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     botAdminRole = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
@@ -62,27 +64,23 @@ namespace OWuffel.Migrations
                     botLanguage = table.Column<string>(type: "text", nullable: true),
                     welcomeChannel = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     welcomeMessageAutoDelete = table.Column<bool>(type: "boolean", nullable: false),
+                    logVoicePresencePowerSwitch = table.Column<bool>(type: "boolean", nullable: false),
                     logVoiceStateUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     logIgnoreVoiceStateUpdated = table.Column<string>(type: "text", nullable: true),
-                    logUserJoined = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logUserLeft = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logUserBanned = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logUserUnbanned = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    logUserMovementPowerSwitch = table.Column<bool>(type: "boolean", nullable: false),
+                    logUserMovement = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    logUserUpdatedPowerSwitch = table.Column<bool>(type: "boolean", nullable: false),
                     logUserUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logMessageDeleted = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logMessageUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logIgnoreMessageUpdated = table.Column<string>(type: "text", nullable: true),
-                    logIgnoreMessageDeleted = table.Column<string>(type: "text", nullable: true),
-                    logEmoteCreated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logEmoteUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logEmoteDeleted = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logRoleCreated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logRoleUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logRoleDeleted = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    logRolePowerSwtich = table.Column<bool>(type: "boolean", nullable: false),
+                    logRoleEvents = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    logMessageEventsPowerSwitch = table.Column<bool>(type: "boolean", nullable: false),
+                    logMessageEvents = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    logIgnoreMessageEvents = table.Column<string>(type: "text", nullable: true),
+                    logEmotePowerSwitch = table.Column<bool>(type: "boolean", nullable: false),
+                    logEmoteEvents = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     logGuildUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logChannelUpdated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logChannelCreated = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    logChannelDeleted = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    logChannelPowerSwitch = table.Column<bool>(type: "boolean", nullable: false),
+                    logChannelEvents = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     suggestionChannel = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     suggestionLogChannel = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     reactServerChannel = table.Column<decimal>(type: "numeric(20,0)", nullable: false),

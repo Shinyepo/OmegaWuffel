@@ -27,7 +27,7 @@ namespace OWuffel.Events
                 var channel = message.Channel as SocketGuildChannel;
                 var guild = channel.Guild;
 
-                var cat = guild.CategoryChannels.SingleOrDefault(c=> c.Id == config.ParentId);
+                var cat = guild.CategoryChannels.SingleOrDefault(c => c.Id == config.ParentId);
 
                 var ticket = new Tickets();
                 ticket.GuildId = guild.Id;
@@ -73,7 +73,7 @@ namespace OWuffel.Events
             var sw = Stopwatch.StartNew();
             Console.WriteLine("maintask start");
             var message = await msg.DownloadAsync();
-            
+
             var votelike = new Emoji("👍");
             var votedislike = new Emoji("👎");
             if (reaction.Emote.Name == votelike.Name)
@@ -123,6 +123,34 @@ namespace OWuffel.Events
                     //var sw = Stopwatch.StartNew();
                     //Console.WriteLine(sw + " start reactionadded");
                     var message = await msg.DownloadAsync();
+                    var list = message.Reactions.Where(x => x.Key.Name != reaction.Emote.Name).Select(x=>x.Key).ToArray();
+                    await message.RemoveReactionsAsync(reaction.User.GetValueOrDefault(), list);
+
+
+
+
+
+
+                    var emotelist = new List<IEmote>();
+                    foreach (var item in message.Reactions)
+                    {
+                        if (item.Key.Name != reaction.Emote.Name)
+                        {
+                            var limit = message.Reactions.SingleOrDefault(x=>x.Key == item.Key).Value.ReactionCount;
+                            var b = await message.GetReactionUsersAsync(item.Key, limit).FlattenAsync();
+                            b = b.Where(x => x.Id == reaction.UserId);
+                            if (b.Count() > 0)
+                            {
+                                emotelist.Add(item.Key);
+                            }
+                        }
+                    }
+                    if (emotelist.Count() > 0)
+                    {
+                        var user = reaction.User.GetValueOrDefault();
+                        await message.RemoveReactionsAsync(user, emotelist.ToArray());
+                    }
+
                     var chnl = channel as SocketGuildChannel;
                     var suggestion = await _db.LoopSuggestions(chnl.Guild.Id, msg.Id);
                     if (suggestion != null)
@@ -161,7 +189,7 @@ namespace OWuffel.Events
                 }
             });
             return Task.CompletedTask;
-        }        
+        }
 
         public Task ReactionRemoved(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel channel, SocketReaction reaction)
         {

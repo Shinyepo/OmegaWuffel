@@ -83,7 +83,7 @@ namespace OWuffel.Events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(user.Guild);
-                    if (Settings == null || Settings.logUserJoined == 0) return;
+                    if (Settings == null || Settings.logUserMovement == 0) return;
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"✅ User joined.")
                          .WithColor(Color.Green)
@@ -94,7 +94,7 @@ namespace OWuffel.Events
                          .WithCurrentTimestamp();
 
                     ITextChannel channel;
-                    var chnl = user.Guild.GetChannel(Settings.logUserJoined);
+                    var chnl = user.Guild.GetChannel(Settings.logUserMovement);
                     channel = (ITextChannel)chnl;
 
                     await channel.SendMessageAsync("", false, embed.Build());
@@ -114,7 +114,7 @@ namespace OWuffel.Events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(user.Guild);
-                    if (Settings == null || Settings.logUserLeft == 0) return;
+                    if (Settings == null || Settings.logUserMovement == 0) return;
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"❌ User left.")
                          .WithColor(Color.Red)
@@ -124,7 +124,7 @@ namespace OWuffel.Events
                          .WithCurrentTimestamp();
 
                     ITextChannel channel;
-                    var chnl = user.Guild.GetChannel(Settings.logUserLeft);
+                    var chnl = user.Guild.GetChannel(Settings.logUserMovement);
                     channel = (ITextChannel)chnl;
 
                     await channel.SendMessageAsync("", false, embed.Build());
@@ -144,9 +144,9 @@ namespace OWuffel.Events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(guild);
-                    if (Settings == null || Settings.logUserUnbanned == 0) return;
+                    if (Settings == null || Settings.logUserMovement == 0) return;
 
-                    ITextChannel channel = guild.GetTextChannel(Settings.logUserUnbanned);
+                    ITextChannel channel = guild.GetTextChannel(Settings.logUserMovement);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"✅ User has been unbanned.")
@@ -173,9 +173,9 @@ namespace OWuffel.Events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(guild);
-                    if (Settings == null || Settings.logUserBanned == 0) return;
+                    if (Settings == null || Settings.logUserMovement == 0) return;
 
-                    ITextChannel channel = guild.GetTextChannel(Settings.logUserBanned);
+                    ITextChannel channel = guild.GetTextChannel(Settings.logUserMovement);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"❌ User has been banned.")
@@ -292,7 +292,7 @@ namespace OWuffel.Events
                             var str = $"⛔ {diffRoles.First()}";
 
                             var obj = new RoleList(channel, str);
-
+                            
                             RoleUpdates.AddOrUpdate(after,
                                 new List<RoleList>() { obj }, (id, list) =>
                                 {

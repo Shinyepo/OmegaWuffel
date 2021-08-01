@@ -93,8 +93,8 @@ namespace OWuffel.events
 
                         if (guild1.Emotes.Count > guild2.Emotes.Count)
                         {
-                            if (settings.logEmoteDeleted == 0) return;
-                            ITextChannel logChannel = guild2.GetTextChannel(settings.logEmoteDeleted);
+                            if (settings.logEmoteEvents == 0) return;
+                            ITextChannel logChannel = guild2.GetTextChannel(settings.logEmoteEvents);
                             if (logChannel == null) return;
                             var diffRoles = guild1.Emotes.Where(r => !guild2.Emotes.Contains(r)).Select(r => r.Name);
                             var emote = guild1.Emotes.FirstOrDefault(e => e.Name == diffRoles.First());
@@ -106,8 +106,8 @@ namespace OWuffel.events
                         }
                         else if (guild1.Emotes.Count < guild2.Emotes.Count)
                         {
-                            if (settings.logEmoteCreated == 0) return;
-                            ITextChannel logChannel = guild2.GetTextChannel(settings.logEmoteCreated);
+                            if (settings.logEmoteEvents == 0) return;
+                            ITextChannel logChannel = guild2.GetTextChannel(settings.logEmoteEvents);
                             if (logChannel == null) return;
                             var diffRoles = guild2.Emotes.Where(r => !guild1.Emotes.Contains(r)).Select(r => r.Name);
                             var emote = guild2.Emotes.FirstOrDefault(e => e.Name == diffRoles.First());
@@ -121,8 +121,8 @@ namespace OWuffel.events
                     }
                     if (guild1.Emotes != guild2.Emotes)
                     {
-                        if (settings.logEmoteUpdated == 0) return;
-                        ITextChannel logChannel = guild2.GetTextChannel(settings.logEmoteUpdated);
+                        if (settings.logEmoteEvents == 0) return;
+                        ITextChannel logChannel = guild2.GetTextChannel(settings.logEmoteEvents);
                         if (logChannel == null) return;
 
                         EmbedBuilder em = new EmbedBuilder()
@@ -171,8 +171,8 @@ namespace OWuffel.events
                     var chnl2 = channel2 as SocketGuildChannel;
                     var guild = chnl1.Guild;
                     var Settings = await _db.GetGuildSettingsAsync(guild);
-                    if (Settings.logChannelUpdated == 0) return;
-                    ITextChannel channel = guild.GetTextChannel(Settings.logChannelUpdated);
+                    if (Settings.logChannelEvents == 0) return;
+                    ITextChannel channel = guild.GetTextChannel(Settings.logChannelEvents);
 
                     //if (chnl.Name != chnl2.Name)
                     //{
@@ -261,8 +261,8 @@ namespace OWuffel.events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(role.Guild);
-                    if (Settings.logRoleCreated == 0) return;
-                    ITextChannel channel = role.Guild.GetTextChannel(Settings.logRoleCreated);
+                    if (Settings.logRoleEvents == 0) return;
+                    ITextChannel channel = role.Guild.GetTextChannel(Settings.logRoleEvents);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"✅ Role created.")
@@ -290,8 +290,8 @@ namespace OWuffel.events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(role2.Guild);
-                    if (Settings.logRoleUpdated == 0) return;
-                    ITextChannel channel = role2.Guild.GetTextChannel(Settings.logRoleUpdated);
+                    if (Settings.logRoleEvents == 0) return;
+                    ITextChannel channel = role2.Guild.GetTextChannel(Settings.logRoleEvents);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"🗒 Role update.")
@@ -364,8 +364,8 @@ namespace OWuffel.events
                 try
                 {
                     var Settings = await _db.GetGuildSettingsAsync(role.Guild);
-                    if (Settings.logRoleDeleted == 0) return;
-                    ITextChannel channel = role.Guild.GetTextChannel(Settings.logRoleDeleted);
+                    if (Settings.logRoleEvents == 0) return;
+                    ITextChannel channel = role.Guild.GetTextChannel(Settings.logRoleEvents);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"❌ Role deleted.")
