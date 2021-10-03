@@ -6,44 +6,40 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using OWuffel.Extensions.Database;
-using OWuffel.Services.Config;
 using OWuffel.Util;
 using System.Text.RegularExpressions;
+using OWuffel.Models;
+using System.Linq;
+using OWuffel.Extensions;
 
 namespace OWuffel.Services
 {
     public class CommandHandler
     {
         // setup fields to be set later in the constructor
-        private readonly MainConfig Config;
-        private readonly CommandService _commands;
-        private readonly DiscordSocketClient _client;
-        private readonly IServiceProvider _services;
-        private DatabaseUtilities _db;
-        private string Prefix;
+        private readonly CommandService Commands;
+        private readonly DiscordSocketClient Client;
+        private readonly IServiceProvider Services;
+        private DatabaseUtilities DbUtilities;
+
         private ulong GuildId = 812328100988977162;
         private ulong ChannelId = 821288092853862461;
 
-        public CommandHandler(IServiceProvider services)
+        public CommandHandler(CommandService commandService,
+                              DiscordSocketClient client,
+                              IServiceProvider services,
+                              DatabaseUtilities dbUtilities)
         {
-            // juice up the fields with these services
-            // since we passed the services in, we can use GetRequiredService to pass them into the fields set earlier
-            Config = services.GetRequiredService<MainConfig>();
-            _commands = services.GetRequiredService<CommandService>();
-            _client = services.GetRequiredService<DiscordSocketClient>();
-            _db = services.GetRequiredService<DatabaseUtilities>();
-            _services = services;
+            Commands = commandService;
+            Client = client;
+            DbUtilities = dbUtilities;
+            Services = services;
 
-            // take action when we execute a command
-            _commands.CommandExecuted += CommandExecutedAsync;
-
-
-            // take action when we receive a message (so we can process it, and see if it is a valid command)
-            _client.MessageReceived += MessageReceivedAsync;
+            Commands.CommandExecuted += CommandExecutedAsync;
+            Client.MessageReceived += MessageReceivedAsync;
         }
         public async Task MessageReceivedAsync(SocketMessage rawMessage)
         {
-            // ensures we don't process system/other bot messages
             if (!(rawMessage is SocketUserMessage message))
             {
                 return;
@@ -54,43 +50,50 @@ namespace OWuffel.Services
                 return;
             }
 
-            // sets the argument position away from the prefix we set
             var argPos = 0;
 
-            // get prefix from the configuration file
-            var guildchannel = message.Channel as SocketGuildChannel;
-            var settings = await _db.GetGuildSettingsAsync(guildchannel.Guild);
-            Prefix = settings.botPrefix;
-            if (Prefix == null)
+            var guildChannel = message.Channel as SocketGuildChannel;
+            var settings = await DbUtilities.GetGuildSettingsAsync(guildChannel.Guild);
+            var prefix = settings.BotPrefix;
+            if (prefix == null)
             {
-                await _db.SetSettingsValueAsync(guildchannel.Guild, "botPrefix", "+");
-                settings = await _db.GetGuildSettingsAsync(guildchannel.Guild);
-                Prefix = settings.botPrefix;
+                await DbUtilities.SetSettingsValueAsync(guildChannel.Guild, "BotPrefix", "+");
+                settings = await DbUtilities.GetGuildSettingsAsync(guildChannel.Guild);
+                prefix = settings.BotPrefix;
             }
-            if (message.Content.Contains(_client.CurrentUser.Id.ToString()))
+            var mentions = message.MentionedUsers;
+            if (mentions.Count == 1 && mentions.First().Id == Client.CurrentUser.Id)
             {
-                var cut = message.Content.Replace("<@!" + _client.CurrentUser.Id + ">", "").Trim();
-                if (cut.Length == 0)
+                var content = message.Content;
+                int mentionEnd = content.IndexOf('>');
+                if (!(content.Length > mentionEnd + 2))
                 {
-                    await message.Channel.SendMessageAsync($"{message.Author.Mention}, my prefix for this server is \"**{Prefix}**\"");
-                    return;
+                    int mentionStart = content.IndexOf("@");
+                    var subString = content.Substring(mentionStart+2, mentionEnd - 3);
+                    if (subString == Client.CurrentUser.Id.ToString())
+                    {
+                        await message.Channel.SendMessageAsync($"{message.Author.Mention}, my prefix for this server is \"**{prefix}**\"");
+                        return;
+                    }
+
                 }
             }
-            // determine if the message has a valid prefix, and adjust argPos based on prefix
 
-            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(Prefix.ToString(), ref argPos)))
+            // determine if the message has a valid prefix, and adjust argPos based on prefix
+            var d = message.Stickers;
+            if (!(message.HasMentionPrefix(Client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix.ToString(), ref argPos)))
             {
                 return;
             }
-            var context = new Cipska(_client, message, settings);
+            var context = new SocketCommandContext(Client, message);
             // execute command if one is found that matches
-            await _commands.ExecuteAsync(context, argPos, _services);
+            await Commands.ExecuteAsync(context, argPos, Services);
         }
 
         public async Task InitializeAsync()
         {
             // register modules that are public and inherit ModuleBase<T>.
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+            await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
         }
 
         // this class is where the magic starts, and takes actions upon receiving messages
@@ -144,15 +147,5 @@ namespace OWuffel.Services
             }
             //await context.Channel.SendMessageAsync($"Sorry, {context.User.Username}... something went wrong -> [{result}]!");
         }
-    }
-    public class Cipska : SocketCommandContext
-    {
-        public Settings Settings { get; }
-
-        public Cipska(DiscordSocketClient client, SocketUserMessage ms) : base(client, ms) { }
-        public Cipska(DiscordSocketClient client, SocketUserMessage ms, Settings settings) : base(client, ms)
-        {
-            Settings = settings;
-        }
-    }
+    }    
 }

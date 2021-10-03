@@ -1,6 +1,9 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
+using OWuffel.Extensions;
 using OWuffel.Extensions.Database;
+using OWuffel.Models;
 using OWuffel.Services;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ namespace OWuffel.Util
     public class DatabaseUtilities
     {
         private readonly WuffelDBContext _db;
-        private Settings Settings;
+        private BotSettings Settings;
         private Suggestions Suggestions;
 
         public DatabaseUtilities(WuffelDBContext db)
@@ -22,13 +25,13 @@ namespace OWuffel.Util
             _db = db;
         }
 
-        public async Task<Settings> GetGuildSettingsAsync(SocketGuild guild)
+        public async Task<BotSettings> GetGuildSettingsAsync(SocketGuild guild)
         {
             try
             {
                 using (var context = new WuffelDBContext())
                 {
-                    Settings = await context.Settings.SingleOrDefaultAsync(s => s.guild_id == guild.Id);
+                    Settings = await context.BotSettings.Include(x=>x.GuildInformation).SingleOrDefaultAsync(s => s.GuildId == guild.Id);
                     Log.Info(guild.Name+"("+guild.Id+") " + context.ContextId.ToString());
 
                     if (Settings == null)
@@ -42,32 +45,67 @@ namespace OWuffel.Util
             catch (Exception ex)
             {
                 Log.Error(ex);
-                return new Settings();
+                return new BotSettings();
             }
 
         }
 
-
-
-        internal Task CreateChannelCheck(ChannelCheckModel channelcheck)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Settings> SetDefaultSettingsAsync(SocketGuild guild)
+        public async Task<LogsConfig> GetLogsConfigAsync(ulong guildId)
         {
             try
             {
                 using (var context = new WuffelDBContext())
                 {
-                    var Setting = new Settings();
-                    Setting.guild_id = guild.Id;
-                    Setting.guild_name = guild.Name;
-                    Setting.guild_icon_hash = guild.IconUrl;
-                    Setting.botPrefix = "+";
-                    Setting.botDisabledCommands = "[{}]";
-                    Setting.botActive = true;
-                    await context.Settings.AddAsync(Setting);
+                    var result = await context.LogsConfigs.AsQueryable().SingleOrDefaultAsync(s => s.GuildId == guildId);
+                    await context.DisposeAsync();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return null;
+            }
+        }
+        public async Task<BotSettings> SetDefaultSettingsAsync(SocketGuild guild)
+        {
+            try
+            {
+                using (var context = new WuffelDBContext())
+                {
+                    var GuildInformation = new GuildInformation();
+                    GuildInformation.GuildName = guild.Name;
+                    GuildInformation.GuildAvatar = guild.IconUrl;
+                    GuildInformation.GuildOwnerId = guild.Owner.Id;
+                    GuildInformation.GuildOwnerName = guild.Owner.Username + "#" + guild.Owner.Discriminator;
+                    GuildInformation.GuildId = guild.Id;
+                    await context.GuildInformations.AddAsync(GuildInformation);                    
+                    await context.SaveChangesAsync();
+                    var Setting = new BotSettings();
+                    Setting.GuildId = guild.Id;
+                    Setting.BotPrefix = "+";
+                    Setting.BotDisabledCommands = "[{}]";
+                    Setting.BotActive = true;
+                    await context.BotSettings.AddAsync(Setting);
+                    var dailyRankingConfig = new DailyRankingConfig();
+                    dailyRankingConfig.GuildId = guild.Id;
+                    await context.DailyRankingConfigs.AddAsync(dailyRankingConfig);
+                    var logsConfig = new LogsConfig();
+                    logsConfig.GuildId = guild.Id;
+                    await context.LogsConfigs.AddAsync(logsConfig);
+                    var reactionsConfig = new ReactionsConfig();
+                    reactionsConfig.GuildId = guild.Id;
+                    await context.ReactionsConfigs.AddAsync(reactionsConfig);
+                    var suggestionsConfig = new SuggestionsConfig();
+                    suggestionsConfig.GuildId = guild.Id;
+                    await context.SuggestionsConfigs.AddAsync(suggestionsConfig);
+                    var supportConfig = new SupportConfig();
+                    supportConfig.GuildId = guild.Id;
+                    await context.SupportConfigs.AddAsync(supportConfig);
+                    var welcomeMessageConfig = new WelcomeMessageConfig();
+                    welcomeMessageConfig.GuildId = guild.Id;
+                    await context.WelcomeMessageConfigs.AddAsync(welcomeMessageConfig);
+
                     await context.SaveChangesAsync();
                     await context.DisposeAsync();
                     return Setting;
@@ -84,7 +122,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Settings = await context.Settings.SingleOrDefaultAsync(s => s.guild_id == guild.Id);
+                Settings = await context.BotSettings.AsQueryable().SingleOrDefaultAsync(s => s.GuildId == guild.Id);
 
                 if (Settings == null)
                 {
@@ -101,7 +139,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Settings = await context.Settings.SingleOrDefaultAsync(s => s.guild_id == guild.Id);
+                Settings = await context.BotSettings.AsQueryable().SingleOrDefaultAsync(s => s.GuildId == guild.Id);
 
                 if (Settings == null)
                 {
@@ -126,7 +164,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.Id == id);
+                Suggestions = await context.Suggestions.AsQueryable().SingleOrDefaultAsync(s => s.Id == id);
                 if (Suggestions == null) return new Suggestions();
                 if (Suggestions.GuildId != guild) return new Suggestions();
                 await context.DisposeAsync();
@@ -149,7 +187,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.Id == id);
+                Suggestions = await context.Suggestions.AsQueryable().SingleOrDefaultAsync(s => s.Id == id);
                 if (Suggestions == null) return new Suggestions();
                 if (Suggestions.GuildId != guild) return new Suggestions();
                 Suggestions.Comment = comment;
@@ -163,7 +201,7 @@ namespace OWuffel.Util
             using (var context = new WuffelDBContext())
             {
                 var a = context.Suggestions.Count();
-                Suggestions = await context.Suggestions.FirstOrDefaultAsync(s => s.Id == id);
+                Suggestions = await context.Suggestions.AsQueryable().FirstOrDefaultAsync(s => s.Id == id);
                 if (Suggestions == null) return new Suggestions();
                 if (Suggestions.GuildId != guild) return new Suggestions();
                 Suggestions.MessageId = statchnlus.Id;
@@ -177,7 +215,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.Id == id && s.GuildId == guild);
+                Suggestions = await context.Suggestions.AsQueryable().SingleOrDefaultAsync(s => s.Id == id && s.GuildId == guild);
                 if (Suggestions == null) return new Suggestions();
                 Suggestions.Status = status;
                 await context.SaveChangesAsync();
@@ -189,7 +227,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.Id == suggestion.Id);
+                Suggestions = await context.Suggestions.AsQueryable().SingleOrDefaultAsync(s => s.Id == suggestion.Id);
                 if (Suggestions == null) return new Suggestions();
                 switch (type)
                 {
@@ -213,7 +251,7 @@ namespace OWuffel.Util
         {
             using (var context = new WuffelDBContext())
             {
-                Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.Id == id);
+                Suggestions = await context.Suggestions.AsQueryable().SingleOrDefaultAsync(s => s.Id == id);
                 if (Suggestions == null) return false;
                 if (Suggestions.GuildId != guild) return false;
                 context.Remove(Suggestions);
@@ -229,101 +267,28 @@ namespace OWuffel.Util
             {
                 var sw = Stopwatch.StartNew();
                 Console.WriteLine(sw + "loop start");
-                Suggestions = await context.Suggestions.SingleOrDefaultAsync(s => s.GuildId == guild && s.MessageId == messageid && s.Status == 1);
+                Suggestions = await context.Suggestions.AsQueryable().SingleOrDefaultAsync(s => s.GuildId == guild && s.MessageId == messageid && s.Status == 1);
                 await context.DisposeAsync();
                 sw.Stop();
                 Log.Info($"Connected in {sw.Elapsed.TotalSeconds:F2}s passed loop");
                 return Suggestions;
             }
         }
-
-
-
-        //-----------------------CHANNEL CHECKS BDO ---------------------------//
-        public async Task<ChannelCheckModel> CreateChannelCheckAsync(ChannelCheckModel channelcheck)
-        {
-            using (var context = new WuffelDBContext())
-            {
-                var embeds = context.ChannelChecks.AsQueryable().Where(f => f.GuildId == channelcheck.GuildId).ToList();
-                embeds.ForEach(a => a.Status = 0);
-                await context.SaveChangesAsync();
-                await context.ChannelChecks.AddAsync(channelcheck);
-                await context.SaveChangesAsync();
-                await context.DisposeAsync();
-                return channelcheck;
-            }
-        }
-
-        public async Task<ChannelCheckModel> ChannelCheckUpdateMessageIdAsync(ChannelCheckModel channelcheck)
-        {
-            using (var context = new WuffelDBContext())
-            {
-                var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
-                ChannelCheck.MessageId = channelcheck.MessageId;
-                await context.SaveChangesAsync();
-                await context.DisposeAsync();
-                return ChannelCheck;
-            }
-        }
-
-        public async Task<ChannelCheckModel> GetChannelCheckAsync(int id)
-        {
-            using (var context = new WuffelDBContext())
-            {
-                var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == id && ch.Status == 1);
-                await context.DisposeAsync();
-                return ChannelCheck;
-            }
-        }
-        public async Task<ChannelCheckModel> UpdateCheckChannelsAsync(ChannelCheckModel channelcheck)
-        {
-            using (var context = new WuffelDBContext())
-            {
-                var ChannelCheck = await context.ChannelChecks.SingleOrDefaultAsync(ch => ch.Id == channelcheck.Id && ch.Status == 1);
-                if (ChannelCheck == null) return ChannelCheck;
-                ChannelCheck.Channels = channelcheck.Channels;
-                ChannelCheck.Status = channelcheck.Status;
-                await context.SaveChangesAsync();
-                await context.DisposeAsync();
-                return ChannelCheck;
-            }
-        }
-
-        public async Task<ChannelCheckModel> GetLastEmbedAsync(ulong guild_id)
-        {
-            using (var context = new WuffelDBContext())
-            {
-                try
-                {
-                    var channelcheck = await context.ChannelChecks.LastAsync(c => c.GuildId == guild_id && c.Status == 1);
-                    await context.DisposeAsync();
-                    if (channelcheck == null) return new ChannelCheckModel();
-                    return channelcheck;
-                }
-                catch (Exception)
-                {
-                    return new ChannelCheckModel();
-                }
-
-            }
-        }
-
-
-        //-----------------------CHANNEL CHECKS BDO ---------------------------//
+        
         //----------------------- SUPPORT MODULE ------------------------------//
 
-        public async Task<SupportConfiguration> LookForConfigurationAsync(ulong guild_id)
+        public async Task<SupportConfig> LookForConfigurationAsync(ulong guild_id)
         {
             using (var context = new WuffelDBContext())
             {
-                var config = await context.SupportConfiguration.SingleOrDefaultAsync(c => c.GuildId == guild_id);
+                var config = await context.SupportConfigs.AsQueryable().SingleOrDefaultAsync(c => c.GuildId == guild_id);
                 await context.DisposeAsync();
                 return config;
 
             }
         }
 
-        public async Task<SupportConfiguration> CreateSupportConfigurationAsync(SupportConfiguration supportconfig)
+        public async Task<SupportConfig> CreateSupportConfigurationAsync(SupportConfig supportconfig)
         {
             using (var context = new WuffelDBContext())
             {
@@ -332,20 +297,20 @@ namespace OWuffel.Util
                 {
                     context.Remove(isit);
                 }
-                await context.SupportConfiguration.AddAsync(supportconfig);
+                await context.SupportConfigs.AddAsync(supportconfig);
                 await context.SaveChangesAsync();
                 await context.DisposeAsync();
                 return supportconfig;
             }
         }
-        public async Task<SupportConfiguration> ChangeTicketMessageAsync(ulong guild_id, string message)
+        public async Task<SupportConfig> ChangeTicketMessageAsync(ulong guild_id, string message)
         {
             using (var context = new WuffelDBContext())
             {
-                var config = await context.SupportConfiguration.SingleOrDefaultAsync(c => c.GuildId == guild_id);
+                var config = await context.SupportConfigs.AsQueryable().SingleOrDefaultAsync(c => c.GuildId == guild_id);
                 if (config == null)
                 {
-                    return new SupportConfiguration();
+                    return new SupportConfig();
                 }
                 config.TicketMessage = message;
                 await context.SaveChangesAsync();
@@ -402,35 +367,35 @@ namespace OWuffel.Util
         }
 
         //---------------------------------------Daily Rankings----------------------------------------//
-        public async Task<DailyRanking> CreateDailyRankingConfigAsync(DailyRanking daily)
+        public async Task<DailyRankingConfig> CreateDailyRankingConfigAsync(DailyRankingConfig daily)
         {
             using (var context = new WuffelDBContext())
             {
-                var existing = await context.DailyRankings.SingleOrDefaultAsync(d => d.GuildId == daily.GuildId);
+                var existing = await context.DailyRankingConfigs.AsQueryable().SingleOrDefaultAsync(d => d.GuildId == daily.GuildId);
                 if (existing != null)
                 {
                     context.Remove(existing);
                 }
-                await context.DailyRankings.AddAsync(daily);
+                await context.DailyRankingConfigs.AddAsync(daily);
                 await context.SaveChangesAsync();
                 await context.DisposeAsync();
                 return daily;
             }
         }
-        public async Task<List<DailyRanking>> GetAllDailyRankingsConfigruations()
+        public async Task<List<DailyRankingConfig>> GetAllDailyRankingsConfigruations()
         {
             using (var context = new WuffelDBContext())
             {
-                var list = context.DailyRankings.ToList();
+                var list = context.DailyRankingConfigs.ToList();
                 await context.DisposeAsync();
                 return list;
             }
         }
-        public async Task<DailyRanking> GetGuildDailyRankingConfigAsync(ulong guild_id)
+        public async Task<DailyRankingConfig> GetGuildDailyRankingConfigAsync(ulong guild_id)
         {
             using (var context = new WuffelDBContext())
             {
-                var config = await _db.DailyRankings.SingleOrDefaultAsync(c => c.GuildId == guild_id);
+                var config = await _db.DailyRankingConfigs.AsQueryable().SingleOrDefaultAsync(c => c.GuildId == guild_id);
                 await context.DisposeAsync();
                 return config;
             }

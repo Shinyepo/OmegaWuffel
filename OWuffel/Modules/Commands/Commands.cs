@@ -1,7 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
 using Microsoft.Extensions.DependencyInjection;
+using OWuffel.Extensions;
 using OWuffel.Extensions.Database;
+using OWuffel.Models;
 using OWuffel.Services;
 using System;
 using System.Collections.Generic;
@@ -10,15 +12,8 @@ using System.Threading.Tasks;
 
 namespace OWuffel.Modules.Commands
 {
-    public class Commands : ModuleBase<Cipska>
+    public class Commands : ModuleBase<SocketCommandContext>
     {
-        public Settings WuffelDB { get; set; }
-        private WuffelDBContext _db;
-
-        public Commands(IServiceProvider services)
-        {
-            _db = services.GetRequiredService<WuffelDBContext>();
-        }
 
         [Command("ark")]
         [RequireOwner]

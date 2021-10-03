@@ -32,7 +32,7 @@ namespace OWuffel
             }
             else
             {
-                CreateHostBuilder(args).Build().RunAsync().ConfigureAwait(false);
+                //CreateHostBuilder(args).Build().RunAsync().ConfigureAwait(false);
                 await new ShardsMother()
                     .RunAsync()
                     .ConfigureAwait(false);

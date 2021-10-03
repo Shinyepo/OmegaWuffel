@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=192.168.1.14;Port=5454;Database=OWuffel;User Id=OWuffelDashboard;Password=p@Zaj0swUbr;",
+    "DefaultConnection": "Server=192.168.1.14;Port=5454;Database=OWuffel;User Id=OWuffelDashboard;Password=p@Zaj0swUbr;IncludeErrorDetail=true;",
     "SQLiteConnectionString": "Data Source=Extensions\\Database\\Wuffel.db;Trusted_Connection=True;MultipleActiveResultSets=true"
   },
 
@@ -9,7 +9,7 @@
   //"Token": "Nzk1MzA0NTQzMDM4MDc4OTg2.X_HbEw.KcRaSXN-_FiLQqdd24ShWQkVfR0", //dev dogo
   "Prefix": "+",
 
-  "TotalShards": 1,
+  "TotalShards": 7,
 
   "ProcessConfig": {
     "Windows": {

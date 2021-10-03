@@ -4,7 +4,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using OWuffel.events;
 using OWuffel.Extensions.Database;
 using OWuffel.Services.Config;
 using Serilog;
@@ -27,6 +26,9 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Discord.Addons.Interactive;
 using Interactivity;
 using OWuffel.Modules.Commands;
+using OWuffel.Models;
+using OWuffel.Extensions;
+using Log = OWuffel.Extensions.Log;
 
 namespace OWuffel.Services
 {
@@ -69,7 +71,7 @@ namespace OWuffel.Services
                 ConnectionTimeout = int.MaxValue,
                 TotalShards = Config.TotalShards,
                 ShardId = shardId,
-                AlwaysDownloadUsers = true,
+                AlwaysDownloadUsers = true,                
                 //ExclusiveBulkDelete = true,
 
             });
@@ -77,7 +79,7 @@ namespace OWuffel.Services
             CommandService = new CommandService(new CommandServiceConfig()
             {
                 CaseSensitiveCommands = false,
-                DefaultRunMode = RunMode.Async,
+                DefaultRunMode = RunMode.Async,                
             });
 
             LavaConfig = new LavaConfig
@@ -147,8 +149,8 @@ namespace OWuffel.Services
             await _sp.AllShardsReadyAsync();
             var commandHandler = services.GetService<CommandHandler>().InitializeAsync();
             var CommandService = services.GetService<CommandService>();
-            //var _ = await CommandService.AddModulesAsync(this.GetType().GetTypeInfo().Assembly, services)
-            // .ConfigureAwait(false);
+            var _ = await CommandService.AddModulesAsync(this.GetType().GetTypeInfo().Assembly, services)
+                          .ConfigureAwait(false);
 
 
 
@@ -185,22 +187,21 @@ namespace OWuffel.Services
             };
 
             var s = new ServiceCollection()
+                .AddScoped<IEventsService, EventsService>()
                 .AddSingleton(Config)
                 .AddSingleton(Client)
                 .AddSingleton(CommandService)
-                .AddSingleton<Settings>()
                 .AddSingleton<CommandService>()
-                .AddSingleton<NpgsqlConnection>()
                 .AddSingleton<ServicesConfiguration>()
                 .AddSingleton<LavaNode>()
                 .AddSingleton(LavaConfig)
                 .AddSingleton<CommandHandler>()
-                .AddSingleton<MessageEvents>()
-                .AddSingleton<GuildEvents>()
-                .AddSingleton<UserEvents>()
-                .AddSingleton<ReactionEvents>()
+                //.AddSingleton<MessageEvents>()
+                //.AddSingleton<GuildEvents>()
+                //.AddSingleton<UserEvents>()
+                //.AddSingleton<ReactionEvents>()
                 .AddSingleton<DatabaseUtilities>()
-                .AddSingleton<VoiceChannelEvents>()
+                //.AddSingleton<VoiceChannelEvents>()
                 .AddSingleton(new InteractivityService(Client, conf))
                 .AddSingleton<InteractiveService>();
 

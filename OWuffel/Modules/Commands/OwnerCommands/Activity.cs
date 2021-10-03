@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace OWuffel.Modules.Commands.OwnerCommands
 {
-    public class Activity : ModuleBase<Cipska>
+    public class Activity : ModuleBase<SocketCommandContext>
     {
         [Command("botActivity")]
         [RequireOwner]

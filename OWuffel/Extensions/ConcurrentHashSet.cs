@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-namespace OWuffel.Services
+namespace OWuffel.Extensions
 {
     /// <summary>
     /// Represents a thread-safe hash-based unique collection.

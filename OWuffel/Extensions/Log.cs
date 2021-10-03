@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace OWuffel.Services
+namespace OWuffel.Extensions
 {
     public static class Log
     {

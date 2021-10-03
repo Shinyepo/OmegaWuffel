@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OWuffel.Modules.Commands.AdminCommands
 {
-    public class Roles: ModuleBase<Cipska>
+    public class Roles: ModuleBase<SocketCommandContext>
     {
         public async Task<bool> RemoveRole(SocketGuildUser user, SocketRole role)
         {

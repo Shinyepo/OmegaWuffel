@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OWuffel.Services
+namespace OWuffel.Extensions
 {
     public static class PlatformHelper
     {

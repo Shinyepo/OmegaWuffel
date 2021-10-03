@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace OWuffel.Services
+namespace OWuffel.Extensions
 {
     public static class ProcessExtensions
     {
